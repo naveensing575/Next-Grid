@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import DataGridHeader from './DataGridHeader'
 import DataGridRow from './DataGridRow'
 import Pagination from './Pagination'
+import ColumnManager from './ColumnManager'
 
 interface User {
   id: number
@@ -35,6 +36,7 @@ export default function DataGrid() {
   const [currentPage, setCurrentPage] = useState(1)
   const [sortColumn, setSortColumn] = useState<keyof User | null>(null)
   const [sortOrder, setSortOrder] = useState<SortOrder>(null)
+  const [showColumnManager, setShowColumnManager] = useState(false)
 
   const [filters, setFilters] = useState<Filters>({
     name: '',
@@ -44,6 +46,9 @@ export default function DataGrid() {
     salaryMin: '',
     salaryMax: '',
   })
+
+  const allColumns = ['id', 'name', 'email', 'role', 'department', 'salary', 'joinDate', 'status']
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(allColumns)
 
   const rowsPerPage = 20
 
@@ -75,7 +80,12 @@ export default function DataGrid() {
     setCurrentPage(1)
   }
 
-  // Filter logic
+  const handleToggleColumn = (col: string) => {
+    setVisibleColumns((prev) =>
+      prev.includes(col) ? prev.filter((c) => c !== col) : [...prev, col]
+    )
+  }
+
   const filteredData = data.filter((user) => {
     const matchText = (field: keyof User, value: string) =>
       user[field]?.toString().toLowerCase().includes(value.toLowerCase())
@@ -125,37 +135,55 @@ export default function DataGrid() {
 
   return (
     <div className="overflow-auto border rounded-xl bg-white dark:bg-gray-900 p-4">
-      <div className="flex justify-between items-center mb-4">
-        <input
-          type="text"
-          placeholder="Global search..."
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value)
-            setCurrentPage(1)
-          }}
-          className="w-full max-w-xs px-3 py-2 border rounded dark:bg-gray-800 dark:text-white"
+     <div className="flex justify-between items-start mb-4">
+          <input
+            type="text"
+            placeholder="Global search..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value)
+              setCurrentPage(1)
+            }}
+            className="w-full max-w-xs px-3 py-2 border rounded dark:bg-gray-800 dark:text-white"
+          />
+
+          <button
+            className="ml-4 px-3 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 cursor-pointer rounded text-sm transition-all"
+            onClick={() => setShowColumnManager((prev) => !prev)}
+          >
+            {showColumnManager ? 'Hide' : 'Manage'} Columns
+          </button>
+        </div>
+
+
+
+      {showColumnManager && (
+        <ColumnManager
+          allColumns={allColumns}
+          visibleColumns={visibleColumns}
+          onToggle={handleToggleColumn}
         />
-      </div>
+      )}
 
       <table className="min-w-full text-sm">
-        <thead>
+        <thead className="sticky top-0 z-10">
           <DataGridHeader
             sortColumn={sortColumn}
             sortOrder={sortOrder}
             onSort={handleSort}
             filters={filters}
             onFilterChange={handleFilterChange}
+            visibleColumns={visibleColumns}
           />
         </thead>
         <tbody>
           {paginatedData.length > 0 ? (
             paginatedData.map((user) => (
-              <DataGridRow key={user.id} user={user} />
+              <DataGridRow key={user.id} user={user} visibleColumns={visibleColumns} />
             ))
           ) : (
             <tr>
-              <td colSpan={8} className="text-center py-4">
+              <td colSpan={visibleColumns.length} className="text-center py-4">
                 No results found
               </td>
             </tr>
