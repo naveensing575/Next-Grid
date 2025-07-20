@@ -17,11 +17,15 @@ interface User {
   avatar?: string
 }
 
+type SortOrder = 'asc' | 'desc' | null
+
 export default function DataGrid() {
   const [data, setData] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
+  const [sortColumn, setSortColumn] = useState<keyof User | null>(null)
+  const [sortOrder, setSortOrder] = useState<SortOrder>(null)
   const rowsPerPage = 20
 
   useEffect(() => {
@@ -34,14 +38,38 @@ export default function DataGrid() {
     fetchData()
   }, [])
 
+  const handleSort = (column: keyof User) => {
+    if (sortColumn === column) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : sortOrder === 'desc' ? null : 'asc')
+      if (sortOrder === 'desc') setSortColumn(null)
+    } else {
+      setSortColumn(column)
+      setSortOrder('asc')
+    }
+  }
+
   const filteredData = data.filter((user) =>
     Object.values(user).some((val) =>
       String(val).toLowerCase().includes(searchTerm.toLowerCase())
     )
   )
 
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage)
-  const paginatedData = filteredData.slice(
+  const sortedData = sortColumn
+    ? [...filteredData].sort((a, b) => {
+        const valA = a[sortColumn]
+        const valB = b[sortColumn]
+        if (typeof valA === 'number' && typeof valB === 'number') {
+          return sortOrder === 'asc' ? valA - valB : valB - valA
+        } else {
+          return sortOrder === 'asc'
+            ? String(valA).localeCompare(String(valB))
+            : String(valB).localeCompare(String(valA))
+        }
+      })
+    : filteredData
+
+  const totalPages = Math.ceil(sortedData.length / rowsPerPage)
+  const paginatedData = sortedData.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   )
@@ -65,7 +93,11 @@ export default function DataGrid() {
 
       <table className="min-w-full text-sm">
         <thead>
-          <DataGridHeader />
+          <DataGridHeader
+            onSort={handleSort}
+            sortColumn={sortColumn}
+            sortOrder={sortOrder}
+          />
         </thead>
         <tbody>
           {paginatedData.length > 0 ? (
