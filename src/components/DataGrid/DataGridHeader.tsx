@@ -1,3 +1,6 @@
+'use client'
+import { Reorder, motion } from 'framer-motion'
+
 interface Props {
   onSort: (col: keyof User) => void
   sortColumn: keyof User | null
@@ -5,6 +8,7 @@ interface Props {
   filters: Filters
   onFilterChange: (key: keyof Filters, value: string) => void
   visibleColumns: string[]
+  onReorder: (newOrder: string[]) => void
 }
 
 interface User {
@@ -35,26 +39,11 @@ export default function DataGridHeader({
   filters,
   onFilterChange,
   visibleColumns,
+  onReorder,
 }: Props) {
   const getIcon = (col: keyof User) => {
     if (sortColumn !== col) return ''
     return sortOrder === 'asc' ? ' ▲' : sortOrder === 'desc' ? ' ▼' : ''
-  }
-
-  const renderHeader = (col: keyof User) => {
-    const isSortable = ['name', 'role', 'salary'].includes(col)
-    return (
-      <th
-        key={col}
-        className={`p-3 font-semibold ${
-          isSortable ? 'cursor-pointer select-none' : ''
-        }`}
-        onClick={() => isSortable && onSort(col)}
-      >
-        {col.charAt(0).toUpperCase() + col.slice(1)}
-        {getIcon(col)}
-      </th>
-    )
   }
 
   const renderFilter = (col: keyof User) => {
@@ -81,12 +70,18 @@ export default function DataGridHeader({
               onChange={(e) => onFilterChange(col, e.target.value)}
             >
               <option value="">All</option>
-              {col === 'role' && ['Engineer', 'Manager', 'Designer', 'QA', 'DevOps'].map((r) => (
-                <option key={r} value={r}>{r}</option>
-              ))}
-              {col === 'status' && ['active', 'inactive'].map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
+              {col === 'role' &&
+                ['Engineer', 'Manager', 'Designer', 'QA', 'DevOps'].map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
+              {col === 'status' &&
+                ['active', 'inactive'].map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
             </select>
           </td>
         )
@@ -116,9 +111,40 @@ export default function DataGridHeader({
 
   return (
     <>
-      <tr className="bg-gray-200 dark:bg-gray-800 text-left text-gray-700 dark:text-gray-100">
-        {visibleColumns.map((col) => renderHeader(col as keyof User))}
-      </tr>
+      <Reorder.Group
+        as="tr"
+        axis="x"
+        values={visibleColumns}
+        onReorder={onReorder}
+        className="bg-gray-200 dark:bg-gray-800 text-left text-gray-700 dark:text-gray-100 transition-all duration-300"
+      >
+        {visibleColumns.map((col) => {
+          const isSortable = ['name', 'role', 'salary'].includes(col)
+          return (
+            <Reorder.Item
+              as="th"
+              key={col}
+              value={col}
+              layout
+              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              className="p-3"
+            >
+              <motion.div
+                layout
+                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                className={`flex items-center justify-between w-full transition-all duration-300 ${
+                  isSortable ? 'cursor-pointer select-none' : ''
+                }`}
+                onClick={() => isSortable && onSort(col as keyof User)}
+              >
+                <span className="truncate">{col.charAt(0).toUpperCase() + col.slice(1)}</span>
+                <span>{getIcon(col as keyof User)}</span>
+              </motion.div>
+            </Reorder.Item>
+          )
+        })}
+      </Reorder.Group>
+
       <tr className="bg-gray-50 dark:bg-gray-900">
         {visibleColumns.map((col) => renderFilter(col as keyof User))}
       </tr>

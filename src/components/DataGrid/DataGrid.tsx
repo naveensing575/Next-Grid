@@ -86,6 +86,10 @@ export default function DataGrid() {
     )
   }
 
+  const handleColumnReorder = (newOrder: string[]) => {
+    setVisibleColumns(newOrder)
+  }
+
   const filteredData = data.filter((user) => {
     const matchText = (field: keyof User, value: string) =>
       user[field]?.toString().toLowerCase().includes(value.toLowerCase())
@@ -135,27 +139,25 @@ export default function DataGrid() {
 
   return (
     <div className="overflow-auto border rounded-xl bg-white dark:bg-gray-900 p-4">
-     <div className="flex justify-between items-start mb-4">
-          <input
-            type="text"
-            placeholder="Global search..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value)
-              setCurrentPage(1)
-            }}
-            className="w-full max-w-xs px-3 py-2 border rounded dark:bg-gray-800 dark:text-white"
-          />
+      <div className="flex justify-between items-start mb-4">
+        <input
+          type="text"
+          placeholder="Global search..."
+          value={searchTerm}
+          onChange={(e) => {
+            setSearchTerm(e.target.value)
+            setCurrentPage(1)
+          }}
+          className="w-full max-w-xs px-3 py-2 border rounded dark:bg-gray-800 dark:text-white"
+        />
 
-          <button
-            className="ml-4 px-3 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 cursor-pointer rounded text-sm transition-all"
-            onClick={() => setShowColumnManager((prev) => !prev)}
-          >
-            {showColumnManager ? 'Hide' : 'Manage'} Columns
-          </button>
-        </div>
-
-
+        <button
+          className="ml-4 px-3 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 cursor-pointer rounded text-sm transition-all"
+          onClick={() => setShowColumnManager((prev) => !prev)}
+        >
+          {showColumnManager ? 'Hide' : 'Manage'} Columns
+        </button>
+      </div>
 
       {showColumnManager && (
         <ColumnManager
@@ -174,6 +176,7 @@ export default function DataGrid() {
             filters={filters}
             onFilterChange={handleFilterChange}
             visibleColumns={visibleColumns}
+            onReorder={handleColumnReorder}
           />
         </thead>
         <tbody>
