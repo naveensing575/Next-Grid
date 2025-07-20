@@ -19,7 +19,9 @@ export default function DataGridRow({
 }) {
   return (
     <tr className="border-b hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors odd:bg-gray-50 dark:odd:bg-gray-950">
-      {visibleColumns.includes('id') && <td className="p-3">{user.id}</td>}
+      {visibleColumns.includes('id') && (
+        <td className="p-3 sticky left-0 z-10 bg-white dark:bg-gray-900">{user.id}</td>
+      )}
       {visibleColumns.includes('name') && <td className="p-3">{user.name}</td>}
       {visibleColumns.includes('email') && <td className="p-3">{user.email}</td>}
       {visibleColumns.includes('role') && <td className="p-3">{user.role}</td>}

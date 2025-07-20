@@ -51,9 +51,9 @@ export default function DataGridHeader({
       case 'name':
       case 'email':
         return (
-          <td key={col} className="p-2">
+          <td key={col} className="p-2 min-w-[140px]">
             <input
-              className="w-full px-2 py-1 border rounded text-sm dark:bg-gray-800"
+              className="w-full px-2 py-1 border rounded text-sm h-10 dark:bg-gray-800"
               placeholder={`Search ${col}`}
               value={filters[col]}
               onChange={(e) => onFilterChange(col, e.target.value)}
@@ -63,9 +63,9 @@ export default function DataGridHeader({
       case 'role':
       case 'status':
         return (
-          <td key={col} className="p-2">
+          <td key={col} className="p-2 min-w-[140px]">
             <select
-              className="w-full px-2 py-1 border rounded text-sm dark:bg-gray-800"
+              className="w-full px-2 py-1 border rounded text-sm h-10 dark:bg-gray-800"
               value={filters[col]}
               onChange={(e) => onFilterChange(col, e.target.value)}
             >
@@ -87,63 +87,68 @@ export default function DataGridHeader({
         )
       case 'salary':
         return (
-          <td key={col} className="p-2 flex gap-1">
-            <input
-              type="number"
-              placeholder="Min"
-              value={filters.salaryMin}
-              onChange={(e) => onFilterChange('salaryMin', e.target.value)}
-              className="w-1/2 px-1 py-1 border rounded text-sm dark:bg-gray-800"
-            />
-            <input
-              type="number"
-              placeholder="Max"
-              value={filters.salaryMax}
-              onChange={(e) => onFilterChange('salaryMax', e.target.value)}
-              className="w-1/2 px-1 py-1 border rounded text-sm dark:bg-gray-800"
-            />
+          <td key={col} className="p-2 min-w-[140px]">
+            <div className="flex gap-1">
+              <input
+                type="number"
+                placeholder="Min"
+                value={filters.salaryMin}
+                onChange={(e) => onFilterChange('salaryMin', e.target.value)}
+                className="w-1/2 px-1 py-1 border rounded text-sm h-10 dark:bg-gray-800"
+              />
+              <input
+                type="number"
+                placeholder="Max"
+                value={filters.salaryMax}
+                onChange={(e) => onFilterChange('salaryMax', e.target.value)}
+                className="w-1/2 px-1 py-1 border rounded text-sm h-10 dark:bg-gray-800"
+              />
+            </div>
           </td>
         )
       default:
-        return <td key={col}></td>
+        return <td key={col} className="p-2 min-w-[140px]"></td>
     }
   }
 
   return (
     <>
       <Reorder.Group
-        as="tr"
-        axis="x"
-        values={visibleColumns}
-        onReorder={onReorder}
-        className="bg-gray-200 dark:bg-gray-800 text-left text-gray-700 dark:text-gray-100 transition-all duration-300"
+  as="tr"
+  axis="x"
+  values={visibleColumns}
+  onReorder={onReorder}
+  className="bg-gray-200 dark:bg-gray-800 text-left text-gray-700 dark:text-gray-100 transition-all duration-300"
+>
+  {visibleColumns.map((col) => {
+    const isSortable = ['name', 'role', 'salary'].includes(col)
+    const isSticky = col === 'id'
+
+    return (
+      <Reorder.Item
+        as="th"
+        key={col}
+        value={col}
+        layout
+        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+        className={`p-3 ${isSticky ? 'sticky left-0 z-20 bg-white dark:bg-gray-900' : ''}`}
       >
-        {visibleColumns.map((col) => {
-          const isSortable = ['name', 'role', 'salary'].includes(col)
-          return (
-            <Reorder.Item
-              as="th"
-              key={col}
-              value={col}
-              layout
-              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-              className="p-3"
-            >
-              <motion.div
-                layout
-                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                className={`flex items-center justify-between w-full transition-all duration-300 ${
-                  isSortable ? 'cursor-pointer select-none' : ''
-                }`}
-                onClick={() => isSortable && onSort(col as keyof User)}
-              >
-                <span className="truncate">{col.charAt(0).toUpperCase() + col.slice(1)}</span>
-                <span>{getIcon(col as keyof User)}</span>
-              </motion.div>
-            </Reorder.Item>
-          )
-        })}
+        <motion.div
+          layout
+          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+          className={`flex items-center justify-between w-full transition-all duration-300 ${
+            isSortable ? 'cursor-pointer select-none' : ''
+          }`}
+          onClick={() => isSortable && onSort(col as keyof User)}
+        >
+          <span className="truncate">{col.charAt(0).toUpperCase() + col.slice(1)}</span>
+          <span>{getIcon(col as keyof User)}</span>
+        </motion.div>
+      </Reorder.Item>
+    )
+  })}
       </Reorder.Group>
+
 
       <tr className="bg-gray-50 dark:bg-gray-900">
         {visibleColumns.map((col) => renderFilter(col as keyof User))}
