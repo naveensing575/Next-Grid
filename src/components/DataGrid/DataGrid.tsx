@@ -19,6 +19,15 @@ interface User {
 
 type SortOrder = 'asc' | 'desc' | null
 
+interface Filters {
+  name: string
+  email: string
+  role: string
+  status: string
+  salaryMin: string
+  salaryMax: string
+}
+
 export default function DataGrid() {
   const [data, setData] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
@@ -26,6 +35,16 @@ export default function DataGrid() {
   const [currentPage, setCurrentPage] = useState(1)
   const [sortColumn, setSortColumn] = useState<keyof User | null>(null)
   const [sortOrder, setSortOrder] = useState<SortOrder>(null)
+
+  const [filters, setFilters] = useState<Filters>({
+    name: '',
+    email: '',
+    role: '',
+    status: '',
+    salaryMin: '',
+    salaryMax: '',
+  })
+
   const rowsPerPage = 20
 
   useEffect(() => {
@@ -40,19 +59,47 @@ export default function DataGrid() {
 
   const handleSort = (column: keyof User) => {
     if (sortColumn === column) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : sortOrder === 'desc' ? null : 'asc')
-      if (sortOrder === 'desc') setSortColumn(null)
+      if (sortOrder === 'asc') setSortOrder('desc')
+      else if (sortOrder === 'desc') {
+        setSortOrder(null)
+        setSortColumn(null)
+      } else setSortOrder('asc')
     } else {
       setSortColumn(column)
       setSortOrder('asc')
     }
   }
 
-  const filteredData = data.filter((user) =>
-    Object.values(user).some((val) =>
-      String(val).toLowerCase().includes(searchTerm.toLowerCase())
+  const handleFilterChange = (key: keyof Filters, value: string) => {
+    setFilters((prev) => ({ ...prev, [key]: value }))
+    setCurrentPage(1)
+  }
+
+  // Filter logic
+  const filteredData = data.filter((user) => {
+    const matchText = (field: keyof User, value: string) =>
+      user[field]?.toString().toLowerCase().includes(value.toLowerCase())
+
+    const matchSelect = (field: keyof User, value: string) =>
+      !value || user[field] === value
+
+    const matchRange = (value: number, min: string, max: string) => {
+      const minVal = min ? parseInt(min) : Number.MIN_SAFE_INTEGER
+      const maxVal = max ? parseInt(max) : Number.MAX_SAFE_INTEGER
+      return value >= minVal && value <= maxVal
+    }
+
+    return (
+      matchText('name', filters.name) &&
+      matchText('email', filters.email) &&
+      matchSelect('role', filters.role) &&
+      matchSelect('status', filters.status) &&
+      matchRange(user.salary, filters.salaryMin, filters.salaryMax) &&
+      Object.values(user).some((val) =>
+        String(val).toLowerCase().includes(searchTerm.toLowerCase())
+      )
     )
-  )
+  })
 
   const sortedData = sortColumn
     ? [...filteredData].sort((a, b) => {
@@ -81,7 +128,7 @@ export default function DataGrid() {
       <div className="flex justify-between items-center mb-4">
         <input
           type="text"
-          placeholder="Search..."
+          placeholder="Global search..."
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value)
@@ -94,9 +141,11 @@ export default function DataGrid() {
       <table className="min-w-full text-sm">
         <thead>
           <DataGridHeader
-            onSort={handleSort}
             sortColumn={sortColumn}
             sortOrder={sortOrder}
+            onSort={handleSort}
+            filters={filters}
+            onFilterChange={handleFilterChange}
           />
         </thead>
         <tbody>
