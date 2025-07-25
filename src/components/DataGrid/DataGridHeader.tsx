@@ -114,39 +114,39 @@ export default function DataGridHeader({
   return (
     <>
       <Reorder.Group
-  as="tr"
-  axis="x"
-  values={visibleColumns}
-  onReorder={onReorder}
-  className="bg-gray-200 dark:bg-gray-800 text-left text-gray-700 dark:text-gray-100 transition-all duration-300"
->
-  {visibleColumns.map((col) => {
-    const isSortable = ['name', 'role', 'salary'].includes(col)
-    const isSticky = col === 'id'
-
-    return (
-      <Reorder.Item
-        as="th"
-        key={col}
-        value={col}
-        layout
-        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-        className={`p-3 ${isSticky ? 'sticky left-0 z-20 bg-white dark:bg-gray-900' : ''}`}
+        as="tr"
+        axis="x"
+        values={visibleColumns}
+        onReorder={onReorder}
+        className="bg-gray-200 dark:bg-gray-800 text-left text-gray-700 dark:text-gray-100 transition-all duration-300"
       >
-        <motion.div
-          layout
-          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-          className={`flex items-center justify-between w-full transition-all duration-300 ${
-            isSortable ? 'cursor-pointer select-none' : ''
-          }`}
-          onClick={() => isSortable && onSort(col as keyof User)}
-        >
-          <span className="truncate">{col.charAt(0).toUpperCase() + col.slice(1)}</span>
-          <span>{getIcon(col as keyof User)}</span>
-        </motion.div>
-      </Reorder.Item>
-    )
-  })}
+        {visibleColumns.map((col) => {
+          const isSortable = ['name', 'role', 'salary'].includes(col)
+          const isSticky = col === 'id'
+
+          return (
+            <Reorder.Item
+              as="th"
+              key={col}
+              value={col}
+              layout
+              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              className={`p-3 ${isSticky ? 'sticky left-0 z-20 bg-white dark:bg-gray-900' : ''}`}
+            >
+              <motion.div
+                layout
+                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                className={`flex items-center justify-between w-full transition-all duration-300 ${
+                  isSortable ? 'cursor-pointer select-none' : ''
+                }`}
+                onClick={() => isSortable && onSort(col as keyof User)}
+              >
+                <span className="truncate">{col.charAt(0).toUpperCase() + col.slice(1)}</span>
+                <span>{getIcon(col as keyof User)}</span>
+              </motion.div>
+            </Reorder.Item>
+          )
+        })}
       </Reorder.Group>
 
 

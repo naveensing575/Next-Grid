@@ -24,7 +24,8 @@ export default function ColumnManager({
             <input
               type="checkbox"
               checked={visibleColumns.includes(col)}
-              onChange={() => onToggle(col)}
+              onChange={() => col !== 'id' && onToggle(col)}
+              disabled={col === 'id'}
               className="accent-blue-500 w-4 h-4"
             />
             <span className="capitalize">{col}</span>
