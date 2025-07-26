@@ -48,7 +48,7 @@ export default function DataGridRow({ user, visibleColumns, handleDelete }: Prop
         </td>
       )}
       {visibleColumns.includes('actions') && (
-        <td className="p-3 flex gap-3">
+        <td className="p-3 flex gap-2 items-center">
           <Button label="View" onClick={() => alert(`Viewing ${user.name}`)} color="blue" />
           <Button label="Edit" onClick={() => alert(`Editing ${user.name}`)} color="yellow" />
           <Button label="Delete" onClick={() => handleDelete(user.id)} color="red" />

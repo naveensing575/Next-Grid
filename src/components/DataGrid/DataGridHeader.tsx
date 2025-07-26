@@ -1,4 +1,5 @@
 'use client'
+
 import { Reorder, motion } from 'framer-motion'
 
 interface Props {
@@ -123,6 +124,7 @@ export default function DataGridHeader({
         {visibleColumns.map((col) => {
           const isSortable = ['name', 'role', 'salary'].includes(col)
           const isSticky = col === 'id'
+          const customStyle = col === 'id' ? 'min-w-[40px] max-w-[40px] w-[40px]' : 'min-w-[120px]'
 
           return (
             <Reorder.Item
@@ -131,7 +133,7 @@ export default function DataGridHeader({
               value={col}
               layout
               transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-              className={`p-3 ${isSticky ? 'sticky left-0 z-20 bg-white dark:bg-gray-900' : ''}`}
+              className={`p-3 ${isSticky ? 'sticky left-0 z-20 bg-white dark:bg-gray-900' : ''} ${customStyle}`}
             >
               <motion.div
                 layout
@@ -148,7 +150,6 @@ export default function DataGridHeader({
           )
         })}
       </Reorder.Group>
-
 
       <tr className="bg-gray-50 dark:bg-gray-900">
         {visibleColumns.map((col) => renderFilter(col as keyof User))}
