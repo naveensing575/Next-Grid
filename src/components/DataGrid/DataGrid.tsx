@@ -47,8 +47,19 @@ export default function DataGrid() {
     salaryMax: '',
   })
 
-  const allColumns = ['id', 'name', 'email', 'role', 'department', 'salary', 'joinDate', 'status']
-  const [visibleColumns, setVisibleColumns] = useState<string[]>(allColumns)
+  const allColumns = [
+    'id',
+    'name',
+    'email',
+    'role',
+    'department',
+    'salary',
+    'joinDate',
+    'status',
+    'actions', // ✅ included explicitly
+  ]
+
+  const [visibleColumns, setVisibleColumns] = useState<string[]>([...allColumns])
 
   const rowsPerPage = 20
 
@@ -88,6 +99,10 @@ export default function DataGrid() {
 
   const handleColumnReorder = (newOrder: string[]) => {
     setVisibleColumns(newOrder)
+  }
+
+  const handleDelete = (id: number) => {
+    setData((prev) => prev.filter((user) => user.id !== id))
   }
 
   const filteredData = data.filter((user) => {
@@ -182,7 +197,12 @@ export default function DataGrid() {
         <tbody>
           {paginatedData.length > 0 ? (
             paginatedData.map((user) => (
-              <DataGridRow key={user.id} user={user} visibleColumns={visibleColumns} />
+              <DataGridRow
+                key={user.id}
+                user={user}
+                visibleColumns={visibleColumns}
+                handleDelete={handleDelete}
+              />
             ))
           ) : (
             <tr>
