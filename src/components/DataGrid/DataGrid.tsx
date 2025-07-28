@@ -5,6 +5,7 @@ import DataGridHeader from './DataGridHeader'
 import DataGridRow from './DataGridRow'
 import Pagination from './Pagination'
 import ColumnManager from './ColumnManager'
+import Modal from '../ui/Modal'
 
 interface User {
   id: number
@@ -37,6 +38,8 @@ export default function DataGrid() {
   const [sortColumn, setSortColumn] = useState<keyof User | null>(null)
   const [sortOrder, setSortOrder] = useState<SortOrder>(null)
   const [showColumnManager, setShowColumnManager] = useState(false)
+  const [selectedUser, setSelectedUser] = useState<User | null>(null)
+  const [modalType, setModalType] = useState<'view' | 'edit' | null>(null)
 
   const [filters, setFilters] = useState<Filters>({
     name: '',
@@ -56,11 +59,10 @@ export default function DataGrid() {
     'salary',
     'joinDate',
     'status',
-    'actions', // ✅ included explicitly
+    'actions',
   ]
 
   const [visibleColumns, setVisibleColumns] = useState<string[]>([...allColumns])
-
   const rowsPerPage = 20
 
   useEffect(() => {
@@ -103,6 +105,16 @@ export default function DataGrid() {
 
   const handleDelete = (id: number) => {
     setData((prev) => prev.filter((user) => user.id !== id))
+  }
+
+  const openModal = (type: 'view' | 'edit', user: User) => {
+    setSelectedUser(user)
+    setModalType(type)
+  }
+
+  const closeModal = () => {
+    setSelectedUser(null)
+    setModalType(null)
   }
 
   const filteredData = data.filter((user) => {
@@ -182,7 +194,7 @@ export default function DataGrid() {
         />
       )}
 
-      <table className="min-w-full text-sm">
+      <table className="min-w-full table-fixed text-sm">
         <thead className="sticky top-0 z-10">
           <DataGridHeader
             sortColumn={sortColumn}
@@ -202,6 +214,8 @@ export default function DataGrid() {
                 user={user}
                 visibleColumns={visibleColumns}
                 handleDelete={handleDelete}
+                onView={() => openModal('view', user)}
+                onEdit={() => openModal('edit', user)}
               />
             ))
           ) : (
@@ -219,6 +233,27 @@ export default function DataGrid() {
         totalPages={totalPages}
         onPageChange={setCurrentPage}
       />
+
+      <Modal
+        isOpen={!!modalType}
+        onClose={closeModal}
+        title={modalType === 'view' ? 'View User' : 'Edit User'}
+      >
+        {selectedUser ? (
+          <div className="text-sm space-y-2">
+            <div><strong>ID:</strong> {selectedUser.id}</div>
+            <div><strong>Name:</strong> {selectedUser.name}</div>
+            <div><strong>Email:</strong> {selectedUser.email}</div>
+            <div><strong>Role:</strong> {selectedUser.role}</div>
+            <div><strong>Department:</strong> {selectedUser.department}</div>
+            <div><strong>Salary:</strong> ${selectedUser.salary}</div>
+            <div><strong>Status:</strong> {selectedUser.status}</div>
+            <div><strong>Join Date:</strong> {new Date(selectedUser.joinDate).toLocaleDateString()}</div>
+          </div>
+        ) : (
+          <p>No user selected</p>
+        )}
+      </Modal>
     </div>
   )
 }

@@ -16,13 +16,23 @@ interface Props {
   user: User
   visibleColumns: string[]
   handleDelete: (id: number) => void
+  onView: () => void
+  onEdit: () => void
 }
 
-export default function DataGridRow({ user, visibleColumns, handleDelete }: Props) {
+export default function DataGridRow({
+  user,
+  visibleColumns,
+  handleDelete,
+  onView,
+  onEdit,
+}: Props) {
   return (
     <tr className="border-b hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors odd:bg-gray-50 dark:odd:bg-gray-950">
       {visibleColumns.includes('id') && (
-        <td className="p-3 w-12 sticky left-0 z-10 bg-white dark:bg-gray-900">{user.id}</td>
+        <td className="p-3 w-[60px] sticky left-0 z-10 bg-white dark:bg-gray-900">
+          {user.id}
+        </td>
       )}
       {visibleColumns.includes('name') && <td className="p-3">{user.name}</td>}
       {visibleColumns.includes('email') && <td className="p-3">{user.email}</td>}
@@ -48,9 +58,9 @@ export default function DataGridRow({ user, visibleColumns, handleDelete }: Prop
         </td>
       )}
       {visibleColumns.includes('actions') && (
-        <td className="p-3 flex gap-2 items-center">
-          <Button label="View" onClick={() => alert(`Viewing ${user.name}`)} color="blue" />
-          <Button label="Edit" onClick={() => alert(`Editing ${user.name}`)} color="yellow" />
+        <td className="p-3 flex flex-wrap gap-2">
+          <Button label="View" onClick={onView} color="blue" />
+          <Button label="Edit" onClick={onEdit} color="yellow" />
           <Button label="Delete" onClick={() => handleDelete(user.id)} color="red" />
         </td>
       )}
