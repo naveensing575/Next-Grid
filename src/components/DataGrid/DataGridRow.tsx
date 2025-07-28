@@ -28,7 +28,7 @@ export default function DataGridRow({
   onEdit,
 }: Props) {
   return (
-    <tr className="border-b hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors odd:bg-gray-50 dark:odd:bg-gray-950">
+    <tr className="border-b hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors odd:bg-gray-50 dark:odd:bg-gray-950" style={{ height: '60px' }}>
       {visibleColumns.includes('id') && (
         <td className="p-3 w-[60px] sticky left-0 z-10 bg-white dark:bg-gray-900">
           {user.id}
