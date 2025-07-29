@@ -7,6 +7,8 @@ import DataGridRow from './DataGridRow'
 import Pagination from './Pagination'
 import ColumnManager from './ColumnManager'
 import Modal from '../ui/Modal'
+import BulkActions from './BulkActions'
+import { exportFilteredData } from '@/utils/exportUtils'
 
 interface User {
   id: number
@@ -71,6 +73,27 @@ export default function VirtualizedDataGrid() {
   ]
 
   const [visibleColumns, setVisibleColumns] = useState<string[]>([...allColumns])
+  const [pinnedColumns, setPinnedColumns] = useState<{ left: string[], right: string[] }>({
+    left: [],
+    right: []
+  })
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>({
+    id: 60,
+    name: 150,
+    email: 200,
+    role: 120,
+    department: 150,
+    salary: 120,
+    joinDate: 120,
+    status: 100,
+    actions: 180,
+  })
+  const [frozenColumns, setFrozenColumns] = useState<string[]>([])
+  
+  // New state for features
+  const [selectedIds, setSelectedIds] = useState<number[]>([])
+  const [enableInlineEdit, setEnableInlineEdit] = useState(false)
+  const [enableBulkActions, setEnableBulkActions] = useState(true)
 
   useEffect(() => {
     setIsMounted(true)
@@ -143,8 +166,81 @@ export default function VirtualizedDataGrid() {
     setVisibleColumns(newOrder)
   }
 
+  const handlePinColumn = (col: string, side: 'left' | 'right' | null) => {
+    setPinnedColumns((prev) => {
+      const newPinned = { ...prev }
+      // Remove from both sides first
+      newPinned.left = prev.left.filter(c => c !== col)
+      newPinned.right = prev.right.filter(c => c !== col)
+      
+      // Add to specified side if not null
+      if (side === 'left') {
+        newPinned.left = [...newPinned.left, col]
+      } else if (side === 'right') {
+        newPinned.right = [...newPinned.right, col]
+      }
+      
+      return newPinned
+    })
+  }
+
+  const handleColumnResize = (col: string, width: number) => {
+    setColumnWidths((prev) => ({
+      ...prev,
+      [col]: width
+    }))
+  }
+
+  const handleToggleFrozen = (col: string) => {
+    setFrozenColumns((prev) => 
+      prev.includes(col) 
+        ? prev.filter(c => c !== col)
+        : [...prev, col]
+    )
+  }
+
   const handleDelete = (id: number) => {
     setData((prev) => prev.filter((user) => user.id !== id))
+    // Remove from selection if it was selected
+    setSelectedIds((prev) => prev.filter(selectedId => selectedId !== id))
+  }
+
+  // New handlers for enhanced features
+  const handleUserUpdate = (id: number, updatedFields: Partial<User>) => {
+    setData((prev) => prev.map(user => 
+      user.id === id ? { ...user, ...updatedFields } : user
+    ))
+  }
+
+  const handleRowSelect = (id: number, selected: boolean) => {
+    setSelectedIds((prev) => 
+      selected 
+        ? [...prev, id]
+        : prev.filter(selectedId => selectedId !== id)
+    )
+  }
+
+  const handleSelectAll = (selected: boolean) => {
+    setSelectedIds(selected ? sortedData.map(user => user.id) : [])
+  }
+
+  const handleClearSelection = () => {
+    setSelectedIds([])
+  }
+
+  const handleBulkDelete = (ids: number[]) => {
+    setData((prev) => prev.filter(user => !ids.includes(user.id)))
+    setSelectedIds([])
+  }
+
+  const handleBulkStatusChange = (ids: number[], status: 'active' | 'inactive') => {
+    setData((prev) => prev.map(user => 
+      ids.includes(user.id) ? { ...user, status } : user
+    ))
+  }
+
+  const handleBulkExport = (ids: number[], format: 'csv' | 'excel' | 'pdf') => {
+    exportFilteredData(sortedData, ids, format)
   }
 
   const openModal = (type: 'view' | 'edit', user: User) => {
@@ -155,6 +251,23 @@ export default function VirtualizedDataGrid() {
   const closeModal = () => {
     setSelectedUser(null)
     setModalType(null)
+  }
+
+  // Custom cell renderers for demonstration
+  const customRenderers = {
+    name: (value: string, user: User) => (
+      <div className="flex items-center gap-2">
+        <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-medium">
+          {value.split(' ').map(n => n[0]).join('')}
+        </div>
+        <span>{value}</span>
+      </div>
+    ),
+    email: (value: string, user: User) => (
+      <a href={`mailto:${value}`} className="text-blue-600 hover:underline">
+        {value}
+      </a>
+    ),
   }
 
   const filteredData = data.filter((user) => {
@@ -228,7 +341,7 @@ export default function VirtualizedDataGrid() {
           className="w-full max-w-xs px-3 py-2 border rounded dark:bg-gray-800 dark:text-white"
         />
 
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
@@ -236,7 +349,27 @@ export default function VirtualizedDataGrid() {
               onChange={(e) => setUseVirtualization(e.target.checked)}
               className="accent-blue-500"
             />
-            Enable Virtualization
+            Virtualization
+          </label>
+          
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={enableInlineEdit}
+              onChange={(e) => setEnableInlineEdit(e.target.checked)}
+              className="accent-green-500"
+            />
+            Inline Edit
+          </label>
+          
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={enableBulkActions}
+              onChange={(e) => setEnableBulkActions(e.target.checked)}
+              className="accent-purple-500"
+            />
+            Bulk Actions
           </label>
           
           <button
@@ -260,6 +393,18 @@ export default function VirtualizedDataGrid() {
           onToggle={handleToggleColumn}
         />
       )}
+      
+      {/* Bulk Actions */}
+      {enableBulkActions && (
+        <BulkActions
+          selectedIds={selectedIds}
+          onClearSelection={handleClearSelection}
+          onBulkDelete={handleBulkDelete}
+          onBulkStatusChange={handleBulkStatusChange}
+          onBulkExport={handleBulkExport}
+          totalCount={sortedData.length}
+        />
+      )}
 
       {useVirtualization ? (
         <div
@@ -279,11 +424,20 @@ export default function VirtualizedDataGrid() {
                   onFilterChange={handleFilterChange}
                   visibleColumns={visibleColumns}
                   onReorder={handleColumnReorder}
+                  pinnedColumns={pinnedColumns}
+                  onPinColumn={handlePinColumn}
+                  columnWidths={columnWidths}
+                  onColumnResize={handleColumnResize}
+                  frozenColumns={frozenColumns}
+                  onToggleFrozen={handleToggleFrozen}
+                  enableBulkActions={enableBulkActions}
+                  selectedIds={selectedIds}
+                  onSelectAll={handleSelectAll}
                 />
               </thead>
               <tbody>
                 <tr style={{ height: virtualScroll.offsetY }}>
-                  <td colSpan={visibleColumns.length}></td>
+                  <td colSpan={enableBulkActions ? visibleColumns.length + 1 : visibleColumns.length}></td>
                 </tr>
                 {paginatedData.map((user, index) => (
                   <DataGridRow
@@ -293,10 +447,15 @@ export default function VirtualizedDataGrid() {
                     handleDelete={handleDelete}
                     onView={() => openModal('view', user)}
                     onEdit={() => openModal('edit', user)}
+                    onUpdate={handleUserUpdate}
+                    isSelected={selectedIds.includes(user.id)}
+                    onSelect={enableBulkActions ? handleRowSelect : undefined}
+                    enableInlineEdit={enableInlineEdit}
+                    customRenderers={customRenderers}
                   />
                 ))}
                 <tr style={{ height: virtualScroll.totalHeight - virtualScroll.offsetY - (paginatedData.length * ITEM_HEIGHT) }}>
-                  <td colSpan={visibleColumns.length}></td>
+                  <td colSpan={enableBulkActions ? visibleColumns.length + 1 : visibleColumns.length}></td>
                 </tr>
               </tbody>
             </table>
@@ -326,6 +485,11 @@ export default function VirtualizedDataGrid() {
                     handleDelete={handleDelete}
                     onView={() => openModal('view', user)}
                     onEdit={() => openModal('edit', user)}
+                    onUpdate={handleUserUpdate}
+                    isSelected={selectedIds.includes(user.id)}
+                    onSelect={enableBulkActions ? handleRowSelect : undefined}
+                    enableInlineEdit={enableInlineEdit}
+                    customRenderers={customRenderers}
                   />
                 ))
               ) : (
