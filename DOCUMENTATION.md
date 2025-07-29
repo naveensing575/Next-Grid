@@ -4,6 +4,11 @@
 
 The Zuperscore Data Grid is a comprehensive, feature-rich data grid component built with Next.js 14+, TypeScript, and Tailwind CSS. This document provides detailed technical information about the implementation, architecture, and usage of the data grid.
 
+
+## Lighthouse & Accessibility
+
+> 📸 Lighthouse screenshots imported from `src/assets/laptop.png` and `src/assets/mobile.png`
+
 ## Architecture
 
 ### Component Architecture
@@ -370,33 +375,6 @@ describe("DataGrid", () => {
 });
 ```
 
-### 2. Integration Tests
-
-```typescript
-describe("DataGrid Integration", () => {
-  it("should work with API data", () => {
-    // Test implementation
-  });
-
-  it("should persist user preferences", () => {
-    // Test implementation
-  });
-});
-```
-
-### 3. E2E Tests
-
-```typescript
-describe("DataGrid E2E", () => {
-  it("should allow user interactions", async () => {
-    // Test implementation
-  });
-
-  it("should handle large datasets", async () => {
-    // Test implementation
-  });
-});
-```
 
 ## Deployment
 
