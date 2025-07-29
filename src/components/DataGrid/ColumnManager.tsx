@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import Button from '../ui/Button'
 
 interface ColumnManagerProps {
   allColumns: string[]
@@ -19,7 +18,6 @@ export default function ColumnManager({
   allColumns,
   visibleColumns,
   onToggle,
-  onReorder,
   pinnedColumns = { left: [], right: [] },
   onPinColumn = () => {},
   frozenColumns = [],

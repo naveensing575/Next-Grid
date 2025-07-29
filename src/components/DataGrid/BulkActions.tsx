@@ -3,18 +3,6 @@
 import { useState } from 'react'
 import Button from '../ui/Button'
 
-interface User {
-  id: number
-  name: string
-  email: string
-  role: string
-  department: string
-  salary: number
-  joinDate: string
-  status: 'active' | 'inactive'
-  avatar?: string
-}
-
 interface Props {
   selectedIds: number[]
   onClearSelection: () => void
@@ -32,7 +20,6 @@ export default function BulkActions({
   onBulkExport,
   totalCount,
 }: Props) {
-  const [showActions, setShowActions] = useState(false)
   const [showExportMenu, setShowExportMenu] = useState(false)
 
   if (selectedIds.length === 0) return null
