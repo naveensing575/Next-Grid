@@ -10,19 +10,10 @@ The Zuperscore Data Grid is a comprehensive, feature-rich data grid component bu
 > 
 ![Lighthouse Desktop Report](https://github.com/naveensing575/zuperscore-grid/blob/master/src/assets/laptop.png?raw=true)
 
-- **Performance**: 95+
-- **Accessibility**: 100
-- **Best Practices**: 95+
-- **SEO**: 100
 
 ### Lighthouse Report - Mobile
 
 ![Lighthouse Mobile Report](https://github.com/naveensing575/zuperscore-grid/blob/master/src/assets/mobile.png?raw=true)
-
-- **Performance**: 90+
-- **Accessibility**: 100
-- **Best Practices**: 90+
-- **SEO**: 100`
 
 ## Architecture
 
