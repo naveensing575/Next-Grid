@@ -6,12 +6,24 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:e2e": "playwright test",
+    "test:integration": "jest --testPathPattern=integration",
+    "analyze": "ANALYZE=true npm run build",
+    "deploy:vercel": "vercel --prod",
+    "deploy:netlify": "netlify deploy --prod"
   },
   "dependencies": {
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.6",
     "next": "15.4.2",
+    "next-themes": "^0.4.6",
     "postcss": "^8.5.6",
     "react": "19.1.0",
     "react-dom": "19.1.0"

@@ -165,7 +165,7 @@ export default function DataGrid() {
   if (loading) return <p className="text-center">Loading...</p>
 
   return (
-    <div className="overflow-auto border rounded-xl bg-white dark:bg-gray-900 p-4">
+    <div className="overflow-auto border rounded-xl bg-[var(--background)] text-[var(--foreground)] p-4">
       <div className="flex justify-between items-start mb-4">
         <input
           type="text"
@@ -175,11 +175,11 @@ export default function DataGrid() {
             setSearchTerm(e.target.value)
             setCurrentPage(1)
           }}
-          className="w-full max-w-xs px-3 py-2 border rounded dark:bg-gray-800 dark:text-white"
+          className="w-full max-w-xs px-3 py-2 border rounded bg-[var(--background)] text-[var(--foreground)]"
         />
 
         <button
-          className="ml-4 px-3 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 cursor-pointer rounded text-sm transition-all"
+          className="ml-4 px-3 py-2 bg-[var(--background)] text-[var(--foreground)] border cursor-pointer rounded text-sm transition-all"
           onClick={() => setShowColumnManager((prev) => !prev)}
         >
           {showColumnManager ? 'Hide' : 'Manage'} Columns
@@ -194,7 +194,7 @@ export default function DataGrid() {
         />
       )}
 
-      <table className="min-w-full table-fixed text-sm">
+      <table className="min-w-full table-fixed text-sm bg-[var(--background)] text-[var(--foreground)]">
         <thead className="sticky top-0 z-10">
           <DataGridHeader
             sortColumn={sortColumn}
@@ -240,7 +240,7 @@ export default function DataGrid() {
         title={modalType === 'view' ? 'View User' : 'Edit User'}
       >
         {selectedUser ? (
-          <div className="text-sm space-y-2">
+          <div className="text-sm space-y-2 bg-[var(--background)] text-[var(--foreground)]">
             <div><strong>ID:</strong> {selectedUser.id}</div>
             <div><strong>Name:</strong> {selectedUser.name}</div>
             <div><strong>Email:</strong> {selectedUser.email}</div>

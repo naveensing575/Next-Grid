@@ -44,7 +44,7 @@ export const exportToExcel = (data: User[], filename: string = 'data.xlsx') => {
 
   const headers = ['ID', 'Name', 'Email', 'Role', 'Department', 'Salary', 'Join Date', 'Status']
   
-  let excelContent = `
+  const excelContent = `
     <table>
       <thead>
         <tr>

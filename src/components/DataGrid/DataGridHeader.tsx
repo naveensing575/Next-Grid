@@ -98,9 +98,8 @@ export default function DataGridHeader({
     setShowContextMenu(col)
   }
 
-  const isPinned = (col: string) => {
-    return pinnedColumns.left.includes(col) || pinnedColumns.right.includes(col)
-  }
+  const isPinned = (col: string) =>
+    pinnedColumns.left.includes(col) || pinnedColumns.right.includes(col)
 
   const getPinnedSide = (col: string) => {
     if (pinnedColumns.left.includes(col)) return 'left'
@@ -112,8 +111,8 @@ export default function DataGridHeader({
     const width = columnWidths[col] || 120
     const pinnedSide = getPinnedSide(col)
     const isFrozen = frozenColumns.includes(col)
-    
-    let style: React.CSSProperties = {
+
+    const style: React.CSSProperties = {
       width: `${width}px`,
       minWidth: `${width}px`,
       maxWidth: `${width}px`,
@@ -122,14 +121,11 @@ export default function DataGridHeader({
     if (pinnedSide || isFrozen) {
       style.position = 'sticky'
       style.zIndex = 20
-      style.backgroundColor = 'inherit'
+      style.backgroundColor = 'var(--background)'
     }
 
-    if (pinnedSide === 'left') {
-      style.left = 0
-    } else if (pinnedSide === 'right') {
-      style.right = 0
-    }
+    if (pinnedSide === 'left') style.left = 0
+    else if (pinnedSide === 'right') style.right = 0
 
     return style
   }
@@ -139,9 +135,9 @@ export default function DataGridHeader({
       case 'name':
       case 'email':
         return (
-          <td key={col} className="p-2 min-w-[140px]">
+          <td key={col} className="p-2 min-w-[140px] bg-background text-foreground">
             <input
-              className="w-full px-2 py-1 border rounded text-sm h-10 dark:bg-gray-800"
+              className="w-full px-2 py-1 border rounded text-sm h-10 bg-background text-foreground"
               placeholder={`Search ${col}`}
               value={filters[col]}
               onChange={(e) => onFilterChange(col, e.target.value)}
@@ -151,51 +147,47 @@ export default function DataGridHeader({
       case 'role':
       case 'status':
         return (
-          <td key={col} className="p-2 min-w-[140px]">
+          <td key={col} className="p-2 min-w-[140px] bg-background text-foreground">
             <select
-              className="w-full px-2 py-1 border rounded text-sm h-10 dark:bg-gray-800"
+              className="w-full px-2 py-1 border rounded text-sm h-10 bg-background text-foreground"
               value={filters[col]}
               onChange={(e) => onFilterChange(col, e.target.value)}
             >
               <option value="">All</option>
               {col === 'role' &&
                 ['Engineer', 'Manager', 'Designer', 'QA', 'DevOps'].map((r) => (
-                  <option key={r} value={r}>
-                    {r}
-                  </option>
+                  <option key={r} value={r}>{r}</option>
                 ))}
               {col === 'status' &&
                 ['active', 'inactive'].map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
+                  <option key={s} value={s}>{s}</option>
                 ))}
             </select>
           </td>
         )
       case 'salary':
         return (
-          <td key={col} className="p-2 min-w-[140px]">
+          <td key={col} className="p-2 min-w-[140px] bg-background text-foreground">
             <div className="flex gap-1">
               <input
                 type="number"
                 placeholder="Min"
                 value={filters.salaryMin}
                 onChange={(e) => onFilterChange('salaryMin', e.target.value)}
-                className="w-1/2 px-1 py-1 border rounded text-sm h-10 dark:bg-gray-800"
+                className="w-1/2 px-1 py-1 border rounded text-sm h-10 bg-background text-foreground"
               />
               <input
                 type="number"
                 placeholder="Max"
                 value={filters.salaryMax}
                 onChange={(e) => onFilterChange('salaryMax', e.target.value)}
-                className="w-1/2 px-1 py-1 border rounded text-sm h-10 dark:bg-gray-800"
+                className="w-1/2 px-1 py-1 border rounded text-sm h-10 bg-background text-foreground"
               />
             </div>
           </td>
         )
       default:
-        return <td key={col} className="p-2 min-w-[140px]"></td>
+        return <td key={col} className="p-2 min-w-[140px] bg-background text-foreground"></td>
     }
   }
 
@@ -206,12 +198,11 @@ export default function DataGridHeader({
         axis="x"
         values={visibleColumns}
         onReorder={onReorder}
-        className="bg-gray-200 dark:bg-gray-800 text-left text-gray-700 dark:text-gray-100 transition-all duration-300"
+        className="bg-background text-foreground text-left transition-all duration-300"
         ref={headerRef}
       >
-        {/* Checkbox column for bulk actions */}
         {enableBulkActions && (
-          <th className="p-3 w-[50px] border-r border-gray-300 dark:border-gray-600">
+          <th className="p-3 w-[50px] border-r border-gray-300 bg-background text-foreground">
             <input
               type="checkbox"
               checked={selectedIds.length > 0}
@@ -220,7 +211,7 @@ export default function DataGridHeader({
             />
           </th>
         )}
-        
+
         {visibleColumns.map((col) => {
           const isSortable = ['name', 'role', 'salary'].includes(col)
           const pinnedSide = getPinnedSide(col)
@@ -234,46 +225,36 @@ export default function DataGridHeader({
               layout
               transition={{ type: 'spring', stiffness: 500, damping: 30 }}
               style={getColumnStyle(col)}
-              className={`relative p-3 border-r border-gray-300 dark:border-gray-600 ${
-                pinnedSide ? 'bg-blue-50 dark:bg-blue-900/20' : ''
-              } ${isFrozen ? 'bg-yellow-50 dark:bg-yellow-900/20' : ''}`}
+              className={`relative p-3 border-r border-gray-300 text-foreground ${
+                pinnedSide ? 'bg-background' : ''
+              } ${isFrozen ? 'bg-background' : ''}`}
               onMouseDown={(e) => handleMouseDown(e, col)}
               onContextMenu={(e) => handleContextMenu(e, col)}
             >
               <motion.div
                 layout
-                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                 className={`flex items-center justify-between w-full transition-all duration-300 ${
                   isSortable ? 'cursor-pointer select-none' : ''
                 }`}
                 onClick={() => isSortable && onSort(col as keyof User)}
               >
                 <div className="flex items-center gap-1">
-                  {pinnedSide && (
-                    <span className="text-blue-500 text-xs">
-                      {pinnedSide === 'left' ? '📌' : '📍'}
-                    </span>
-                  )}
+                  {pinnedSide && <span className="text-blue-500 text-xs">{pinnedSide === 'left' ? '📌' : '📍'}</span>}
                   {isFrozen && <span className="text-yellow-500 text-xs">❄️</span>}
                   <span className="truncate">{col.charAt(0).toUpperCase() + col.slice(1)}</span>
                 </div>
                 <span>{getIcon(col as keyof User)}</span>
               </motion.div>
-              
-              {/* Resize Handle */}
-              <div
-                className="resize-handle absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-500 opacity-0 hover:opacity-100 transition-opacity"
-                style={{ zIndex: 30 }}
-              />
-              
-              {/* Context Menu */}
+
+              <div className="resize-handle absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-500 opacity-0 hover:opacity-100 transition-opacity" />
+
               {showContextMenu === col && (
-                <div 
-                  className="absolute top-full left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-lg z-50 min-w-[150px]"
+                <div
+                  className="absolute top-full left-0 mt-1 bg-background text-foreground border border-gray-200 rounded-md shadow-lg z-50 min-w-[150px]"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <button
-                    className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                    className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
                     onClick={() => {
                       onPinColumn(col, pinnedSide === 'left' ? null : 'left')
                       setShowContextMenu(null)
@@ -282,7 +263,7 @@ export default function DataGridHeader({
                     📌 {pinnedSide === 'left' ? 'Unpin' : 'Pin Left'}
                   </button>
                   <button
-                    className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                    className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
                     onClick={() => {
                       onPinColumn(col, pinnedSide === 'right' ? null : 'right')
                       setShowContextMenu(null)
@@ -291,7 +272,7 @@ export default function DataGridHeader({
                     📍 {pinnedSide === 'right' ? 'Unpin' : 'Pin Right'}
                   </button>
                   <button
-                    className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                    className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
                     onClick={() => {
                       onToggleFrozen(col)
                       setShowContextMenu(null)
@@ -305,22 +286,13 @@ export default function DataGridHeader({
           )
         })}
       </Reorder.Group>
-      
-      {/* Click outside to close context menu */}
+
       {showContextMenu && (
-        <div 
-          className="fixed inset-0 z-40" 
-          onClick={() => setShowContextMenu(null)}
-        />
+        <div className="fixed inset-0 z-40" onClick={() => setShowContextMenu(null)} />
       )}
 
-      <tr className="bg-gray-50 dark:bg-gray-900">
-        {/* Empty cell for checkbox column */}
-        {enableBulkActions && (
-          <td className="p-2 w-[50px]">
-            {/* Empty cell for checkbox column in filter row */}
-          </td>
-        )}
+      <tr className="bg-background text-foreground">
+        {enableBulkActions && <td className="p-2 w-[50px] bg-background text-foreground" />}
         {visibleColumns.map((col) => renderFilter(col as keyof User))}
       </tr>
     </>

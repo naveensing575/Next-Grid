@@ -1,11 +1,15 @@
 import VirtualizedDataGrid from '@/components/DataGrid/VirtualizedDataGrid'
+import ThemeToggle from '@/components/ThemeToggle'
 
 export default function HomePage() {
   return (
-    <main className="p-6 bg-white min-h-screen dark:bg-gray-900">
-      <h1 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
-        Zuperscore Data Grid with Virtualization
-      </h1>
+    <main className="p-6 bg-background min-h-screen text-foreground transition-colors duration-300">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-semibold">
+          Zuperscore Data Grid
+        </h1>
+        <ThemeToggle />
+      </div>
       <VirtualizedDataGrid />
     </main>
   )

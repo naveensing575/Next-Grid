@@ -70,20 +70,19 @@ export default function DataGridRow({
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSave()
-    } else if (e.key === 'Escape') {
-      handleCancel()
-    }
+    if (e.key === 'Enter') handleSave()
+    else if (e.key === 'Escape') handleCancel()
   }
 
   const renderEditableCell = (field: string, value: any, displayValue: React.ReactNode) => {
+    const commonInputClass = 'px-2 py-1 border text-sm rounded w-full bg-[var(--background)] text-[var(--foreground)]'
+
     if (editingField === field) {
       if (field === 'role' || field === 'status') {
-        const options = field === 'role' 
+        const options = field === 'role'
           ? ['Engineer', 'Manager', 'Designer', 'QA', 'DevOps']
           : ['active', 'inactive']
-        
+
         return (
           <div className="flex gap-1">
             <select
@@ -92,7 +91,7 @@ export default function DataGridRow({
               onChange={(e) => setEditValue(e.target.value)}
               onBlur={handleSave}
               onKeyDown={handleKeyPress}
-              className="px-2 py-1 border text-sm rounded w-full dark:bg-gray-800"
+              className={commonInputClass}
             >
               {options.map(option => (
                 <option key={option} value={option}>{option}</option>
@@ -100,31 +99,17 @@ export default function DataGridRow({
             </select>
           </div>
         )
-      } else if (field === 'salary') {
+      } else if (field === 'salary' || field === 'joinDate' || typeof value === 'number') {
         return (
           <div className="flex gap-1">
             <input
               ref={inputRef as React.RefObject<HTMLInputElement>}
-              type="number"
-              value={editValue}
-              onChange={(e) => setEditValue(Number(e.target.value))}
-              onBlur={handleSave}
-              onKeyDown={handleKeyPress}
-              className="px-2 py-1 border text-sm rounded w-full dark:bg-gray-800"
-            />
-          </div>
-        )
-      } else if (field === 'joinDate') {
-        return (
-          <div className="flex gap-1">
-            <input
-              ref={inputRef as React.RefObject<HTMLInputElement>}
-              type="date"
+              type={field === 'joinDate' ? 'date' : 'number'}
               value={editValue}
               onChange={(e) => setEditValue(e.target.value)}
               onBlur={handleSave}
               onKeyDown={handleKeyPress}
-              className="px-2 py-1 border text-sm rounded w-full dark:bg-gray-800"
+              className={commonInputClass}
             />
           </div>
         )
@@ -138,7 +123,7 @@ export default function DataGridRow({
               onChange={(e) => setEditValue(e.target.value)}
               onBlur={handleSave}
               onKeyDown={handleKeyPress}
-              className="px-2 py-1 border text-sm rounded w-full dark:bg-gray-800"
+              className={commonInputClass}
             />
           </div>
         )
@@ -148,7 +133,7 @@ export default function DataGridRow({
     return (
       <div
         onDoubleClick={() => handleDoubleClick(field, value)}
-        className={enableInlineEdit ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded p-1' : ''}
+        className={enableInlineEdit ? 'cursor-pointer hover:bg-[var(--foreground)/5] rounded p-1' : ''}
         title={enableInlineEdit ? 'Double-click to edit' : ''}
       >
         {displayValue}
@@ -157,12 +142,8 @@ export default function DataGridRow({
   }
 
   const renderCell = (field: string, value: any) => {
-    // Check for custom renderer first
-    if (customRenderers[field]) {
-      return customRenderers[field](value, user)
-    }
+    if (customRenderers[field]) return customRenderers[field](value, user)
 
-    // Default renderers
     switch (field) {
       case 'salary':
         return renderEditableCell(field, value, `$${value.toLocaleString()}`)
@@ -171,11 +152,7 @@ export default function DataGridRow({
       case 'status':
         const statusDisplay = (
           <span
-            className={`px-2 py-1 rounded-full text-xs font-medium ${
-              value === 'active'
-                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-            }`}
+            className="px-2 py-1 rounded-full text-xs font-medium bg-[var(--foreground)/10] text-[var(--foreground)]"
           >
             {value}
           </span>
@@ -187,13 +164,14 @@ export default function DataGridRow({
   }
 
   return (
-    <tr 
-      className={`border-b hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${
-        isSelected ? 'bg-blue-50 dark:bg-blue-900/20' : 'odd:bg-gray-50 dark:odd:bg-gray-950'
-      }`} 
+    <tr
+      className={`border-b transition-colors hover:bg-[var(--foreground)/5] ${
+        isSelected
+          ? 'bg-[var(--foreground)/10]'
+          : 'odd:bg-[var(--background)]'
+      }`}
       style={{ height: '60px' }}
     >
-      {/* Selection checkbox */}
       {onSelect && (
         <td className="p-3 w-[50px]">
           <input
@@ -204,49 +182,49 @@ export default function DataGridRow({
           />
         </td>
       )}
-      
+
       {visibleColumns.includes('id') && (
-        <td className="p-3 w-[60px] sticky left-0 z-10 bg-white dark:bg-gray-900">
+        <td className="p-3 w-[60px] sticky left-0 z-10 bg-[var(--background)] text-[var(--foreground)]">
           {user.id}
         </td>
       )}
-      
+
       {visibleColumns.includes('name') && (
         <td className="p-3">{renderCell('name', user.name)}</td>
       )}
-      
+
       {visibleColumns.includes('email') && (
         <td className="p-3">{renderCell('email', user.email)}</td>
       )}
-      
+
       {visibleColumns.includes('role') && (
         <td className="p-3">{renderCell('role', user.role)}</td>
       )}
-      
+
       {visibleColumns.includes('department') && (
         <td className="p-3">{renderCell('department', user.department)}</td>
       )}
-      
+
       {visibleColumns.includes('salary') && (
         <td className="p-3">{renderCell('salary', user.salary)}</td>
       )}
-      
+
       {visibleColumns.includes('joinDate') && (
         <td className="p-3">{renderCell('joinDate', user.joinDate)}</td>
       )}
-      
+
       {visibleColumns.includes('status') && (
         <td className="p-3">{renderCell('status', user.status)}</td>
       )}
-      
+
       {visibleColumns.includes('actions') && (
         <td className="p-3">
           <div className="flex flex-wrap gap-2">
             <Button label="View" onClick={onView} color="blue" />
-            <Button 
-              label={enableInlineEdit ? "Modal Edit" : "Edit"} 
-              onClick={onEdit} 
-              color="yellow" 
+            <Button
+              label={enableInlineEdit ? 'Modal Edit' : 'Edit'}
+              onClick={onEdit}
+              color="yellow"
             />
             <Button label="Delete" onClick={() => handleDelete(user.id)} color="red" />
           </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 
 interface VirtualScrollOptions {
   itemHeight: number
@@ -15,6 +15,7 @@ interface VirtualScrollResult {
   offsetY: number
   totalHeight: number
   scrollToIndex: (index: number) => void
+  handleScroll: (event: React.UIEvent<HTMLDivElement>) => void
 }
 
 export function useVirtualScroll<T>(
