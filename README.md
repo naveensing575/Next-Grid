@@ -364,8 +364,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Your Name**
 
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [Your LinkedIn](https://linkedin.com/in/yourprofile)
+- GitHub: [@naveensing575]([https://github.com/yourusername](https://github.com/naveensing575))
+- LinkedIn: [Naveen Singh]([https://linkedin.com/in/yourprofile](https://www.linkedin.com/in/naveensing575/))
 
 ## 🙏 Acknowledgments
 
@@ -376,4 +376,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Built with ❤️ for the Zuperscore Frontend Developer Assignment**
