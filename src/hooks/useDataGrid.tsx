@@ -149,29 +149,33 @@ function gridReducer(state: GridState, action: GridAction): GridState {
         selectedRows: new Set([...state.selectedRows].filter(id => id !== deleteId.toString()))
       }
     
-    case GRID_ACTIONS.UPDATE_ROW:
+    case GRID_ACTIONS.UPDATE_ROW: {
       const { id, updates } = action.payload
       return {
         ...state,
         data: state.data.map(row => row.id === id ? { ...row, ...updates } : row)
       }
-    
-    case GRID_ACTIONS.BULK_DELETE:
+    }
+
+    case GRID_ACTIONS.BULK_DELETE: {
       const deleteIds = action.payload
       return {
         ...state,
         data: state.data.filter(row => !deleteIds.includes(row.id)),
         selectedRows: new Set()
       }
-    
-    case GRID_ACTIONS.BULK_UPDATE:
-      const { ids, updates } = action.payload
+    }
+
+    case GRID_ACTIONS.BULK_UPDATE: {
+      const { ids, updates: bulkUpdates } = action.payload
       return {
         ...state,
-        data: state.data.map(row => 
-          ids.includes(row.id) ? { ...row, ...updates } : row
+        data: state.data.map(row =>
+          ids.includes(row.id) ? { ...row, ...bulkUpdates } : row
         )
       }
+    }
+
     
     default:
       return state

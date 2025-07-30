@@ -7,7 +7,7 @@ import { useDataGrid } from '@/hooks/useDataGrid'
 const DataGridContext = createContext<GridContextType | undefined>(undefined)
 
 export function DataGridProvider({ children }: { children: ReactNode }) {
-  const { state, actions, filteredData, sortedData, paginatedData, preferences } = useDataGrid()
+  const { state, actions } = useDataGrid()
 
   const contextValue: GridContextType = {
     state,

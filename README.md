@@ -108,11 +108,8 @@ src/
 │   │   └── Pagination.tsx           # Pagination component
 │   └── ui/
 │       ├── Button.tsx               # Reusable button component
-│       ├── Input.tsx                # Form input component
-│       ├── Select.tsx               # Select dropdown component
 │       ├── Modal.tsx                # Modal dialog component
 │       ├── Badge.tsx                # Status badge component
-│       └── IconButton.tsx           # Icon button component
 ├── context/
 │   ├── DataGridContext.tsx          # Grid state management
 │   └── ThemeContext.tsx             # Theme management
@@ -120,7 +117,6 @@ src/
 │   ├── useDataGrid.tsx              # Main grid logic hook
 │   ├── useVirtualScroll.tsx         # Virtual scrolling hook
 │   ├── useLocalStorage.tsx          # Local storage persistence
-│   └── useApi.tsx                   # API integration hook
 ├── types/
 │   ├── api.types.ts                 # API-related type definitions
 │   └── grid.types.ts                # Grid-related type definitions

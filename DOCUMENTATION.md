@@ -40,7 +40,6 @@ The grid uses a combination of React Context API and useReducer for state manage
 
 ### Data Flow
 
-1. **Data Loading**: API data fetched through `useApi` hook
 2. **Filtering**: Data filtered based on search terms and column filters
 3. **Sorting**: Data sorted according to sort model
 4. **Pagination**: Data paginated for performance

@@ -20,10 +20,29 @@ export interface GridState {
   useVirtualization: boolean
 }
 
-export interface GridAction {
-  type: string
-  payload?: unknown
-}
+export type GridAction =
+  | { type: 'SET_DATA'; payload: User[] }
+  | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'SET_ERROR'; payload: string | null }
+  | { type: 'SET_SEARCH_TERM'; payload: string }
+  | { type: 'SET_SORT_MODEL'; payload: SortModel[] }
+  | { type: 'SET_FILTER_MODEL'; payload: FilterModel }
+  | { type: 'SET_SELECTED_ROWS'; payload: Set<string> }
+  | { type: 'SET_PAGINATION'; payload: PaginationState }
+  | { type: 'TOGGLE_COLUMN_VISIBILITY'; payload: string }
+  | { type: 'REORDER_COLUMNS'; payload: string[] }
+  | { type: 'PIN_COLUMN'; payload: { column: string; side: 'left' | 'right' | null } }
+  | { type: 'FREEZE_COLUMN'; payload: string }
+  | { type: 'RESIZE_COLUMN'; payload: { column: string; width: number } }
+  | { type: 'SET_DENSITY'; payload: 'compact' | 'standard' | 'comfortable' }
+  | { type: 'TOGGLE_INLINE_EDIT' }
+  | { type: 'TOGGLE_BULK_ACTIONS' }
+  | { type: 'TOGGLE_VIRTUALIZATION' }
+  | { type: 'DELETE_ROW'; payload: number }
+  | { type: 'UPDATE_ROW'; payload: { id: number; updates: Partial<User> } }
+  | { type: 'BULK_DELETE'; payload: number[] }
+  | { type: 'BULK_UPDATE'; payload: { ids: number[]; updates: Partial<User> } }
+
 
 export interface GridContextType {
   state: GridState
