@@ -107,8 +107,6 @@ interface ColumnManagerProps {
 
 ### 3. Sorting & Filtering
 
-**File**: `src/utils/gridHelpers.ts`
-
 Advanced sorting and filtering utilities:
 
 ```typescript

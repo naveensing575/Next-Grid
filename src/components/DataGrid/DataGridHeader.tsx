@@ -11,7 +11,7 @@ interface Props {
   onFilterChange: (key: keyof Filters, value: string) => void
   visibleColumns: string[]
   onReorder: (newOrder: string[]) => void
-  pinnedColumns?: { left: string[], right: string[] }
+  pinnedColumns?: { left: string[]; right: string[] }
   onPinColumn?: (col: string, side: 'left' | 'right' | null) => void
   columnWidths?: Record<string, number>
   onColumnResize?: (col: string, width: number) => void
@@ -61,7 +61,6 @@ export default function DataGridHeader({
   selectedIds = [],
   onSelectAll = () => {},
 }: Props) {
-  const [resizing, setResizing] = useState<string | null>(null)
   const [showContextMenu, setShowContextMenu] = useState<string | null>(null)
   const headerRef = useRef<HTMLTableRowElement>(null)
 
@@ -70,20 +69,18 @@ export default function DataGridHeader({
     return sortOrder === 'asc' ? ' ▲' : sortOrder === 'desc' ? ' ▼' : ''
   }
 
-  const handleMouseDown = (e: React.MouseEvent, col: string) => {
+  const handleMouseDown = (e: React.MouseEvent<HTMLTableHeaderCellElement>, col: string) => {
     if ((e.target as HTMLElement).classList.contains('resize-handle')) {
       e.preventDefault()
-      setResizing(col)
       const startX = e.clientX
       const startWidth = columnWidths[col] || 120
 
-      const handleMouseMove = (e: MouseEvent) => {
-        const newWidth = Math.max(50, startWidth + (e.clientX - startX))
+      const handleMouseMove = (moveEvent: MouseEvent) => {
+        const newWidth = Math.max(50, startWidth + (moveEvent.clientX - startX))
         onColumnResize(col, newWidth)
       }
 
       const handleMouseUp = () => {
-        setResizing(null)
         document.removeEventListener('mousemove', handleMouseMove)
         document.removeEventListener('mouseup', handleMouseUp)
       }
@@ -97,9 +94,6 @@ export default function DataGridHeader({
     e.preventDefault()
     setShowContextMenu(col)
   }
-
-  const isPinned = (col: string) =>
-    pinnedColumns.left.includes(col) || pinnedColumns.right.includes(col)
 
   const getPinnedSide = (col: string) => {
     if (pinnedColumns.left.includes(col)) return 'left'
@@ -125,7 +119,7 @@ export default function DataGridHeader({
     }
 
     if (pinnedSide === 'left') style.left = 0
-    else if (pinnedSide === 'right') style.right = 0
+    if (pinnedSide === 'right') style.right = 0
 
     return style
   }
@@ -228,8 +222,8 @@ export default function DataGridHeader({
               className={`relative p-3 border-r border-gray-300 text-foreground ${
                 pinnedSide ? 'bg-background' : ''
               } ${isFrozen ? 'bg-background' : ''}`}
-              onMouseDown={(e) => handleMouseDown(e, col)}
-              onContextMenu={(e) => handleContextMenu(e, col)}
+              onMouseDown={(e: React.MouseEvent<HTMLTableHeaderCellElement>) => handleMouseDown(e, col)}
+              onContextMenu={(e: React.MouseEvent) => handleContextMenu(e, col)}
             >
               <motion.div
                 layout

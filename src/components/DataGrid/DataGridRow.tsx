@@ -25,7 +25,7 @@ interface Props {
   isSelected?: boolean
   onSelect?: (id: number, selected: boolean) => void
   enableInlineEdit?: boolean
-  customRenderers?: Record<string, (value: any, user: User) => React.ReactNode>
+  customRenderers?: Record<string, (value: string | number, user: User) => React.ReactNode>
 }
 
 export default function DataGridRow({
@@ -41,7 +41,7 @@ export default function DataGridRow({
   customRenderers = {},
 }: Props) {
   const [editingField, setEditingField] = useState<string | null>(null)
-  const [editValue, setEditValue] = useState<any>('')
+  const [editValue, setEditValue] = useState<string | number>('')
   const inputRef = useRef<HTMLInputElement | HTMLSelectElement>(null)
 
   useEffect(() => {
@@ -50,7 +50,7 @@ export default function DataGridRow({
     }
   }, [editingField])
 
-  const handleDoubleClick = (field: string, value: any) => {
+  const handleDoubleClick = (field: string, value: string | number) => {
     if (!enableInlineEdit || !onUpdate) return
     setEditingField(field)
     setEditValue(value)
@@ -74,7 +74,7 @@ export default function DataGridRow({
     else if (e.key === 'Escape') handleCancel()
   }
 
-  const renderEditableCell = (field: string, value: any, displayValue: React.ReactNode) => {
+  const renderEditableCell = (field: string, value: string | number, displayValue: React.ReactNode) => {
     const commonInputClass = 'px-2 py-1 border text-sm rounded w-full bg-[var(--background)] text-[var(--foreground)]'
 
     if (editingField === field) {
@@ -141,19 +141,17 @@ export default function DataGridRow({
     )
   }
 
-  const renderCell = (field: string, value: any) => {
+  const renderCell = (field: string, value: string | number) => {
     if (customRenderers[field]) return customRenderers[field](value, user)
 
     switch (field) {
       case 'salary':
-        return renderEditableCell(field, value, `$${value.toLocaleString()}`)
+        return renderEditableCell(field, value, `$${Number(value).toLocaleString()}`)
       case 'joinDate':
         return renderEditableCell(field, value, new Date(value).toLocaleDateString())
       case 'status':
         const statusDisplay = (
-          <span
-            className="px-2 py-1 rounded-full text-xs font-medium bg-[var(--foreground)/10] text-[var(--foreground)]"
-          >
+          <span className="px-2 py-1 rounded-full text-xs font-medium bg-[var(--foreground)/10] text-[var(--foreground)]">
             {value}
           </span>
         )
@@ -166,9 +164,7 @@ export default function DataGridRow({
   return (
     <tr
       className={`border-b transition-colors hover:bg-[var(--foreground)/5] ${
-        isSelected
-          ? 'bg-[var(--foreground)/10]'
-          : 'odd:bg-[var(--background)]'
+        isSelected ? 'bg-[var(--foreground)/10]' : 'odd:bg-[var(--background)]'
       }`}
       style={{ height: '60px' }}
     >

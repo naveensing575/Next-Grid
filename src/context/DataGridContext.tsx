@@ -11,7 +11,8 @@ export function DataGridProvider({ children }: { children: ReactNode }) {
 
   const contextValue: GridContextType = {
     state,
-    dispatch: actions as React.Dispatch<any>, // Type assertion for compatibility
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    dispatch: actions as unknown as React.Dispatch<any>, // Type assertion for compatibility
     actions: {
       setData: actions.setData,
       setLoading: actions.setLoading,

@@ -39,7 +39,6 @@ const CONTAINER_HEIGHT = 600 // Height of the scrollable container
 export default function VirtualizedDataGrid() {
   const [data, setData] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
-  const [isMounted, setIsMounted] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [sortColumn, setSortColumn] = useState<keyof User | null>(null)
@@ -94,10 +93,6 @@ export default function VirtualizedDataGrid() {
   const [selectedIds, setSelectedIds] = useState<number[]>([])
   const [enableInlineEdit, setEnableInlineEdit] = useState(false)
   const [enableBulkActions, setEnableBulkActions] = useState(true)
-
-  useEffect(() => {
-    setIsMounted(true)
-  }, [])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -254,21 +249,26 @@ export default function VirtualizedDataGrid() {
   }
 
   // Custom cell renderers for demonstration
-  const customRenderers = {
-    name: (value: string, user: User) => (
+  const customRenderers: Record<string, (value: string | number, user: User) => React.ReactNode> = {
+  name: (value) => {
+    const stringValue = String(value)
+    return (
       <div className="flex items-center gap-2">
         <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-medium">
-          {value.split(' ').map(n => n[0]).join('')}
+          {stringValue.split(' ').map(n => n[0]).join('')}
         </div>
-        <span>{value}</span>
+        <span>{stringValue}</span>
       </div>
-    ),
-    email: (value: string, user: User) => (
-      <a href={`mailto:${value}`} className="text-blue-600 hover:underline">
-        {value}
-      </a>
-    ),
-  }
+    )
+  },
+  email: (value) => (
+    <a href={`mailto:${value}`} className="text-blue-600 hover:underline">
+      {value}
+    </a>
+  )
+}
+
+
 
   const filteredData = data.filter((user) => {
     const matchText = (field: keyof User, value: string) =>

@@ -122,7 +122,6 @@ src/
 │   └── grid.types.ts                # Grid-related type definitions
 └── utils/
     ├── exportUtils.ts               # Export functionality
-    └── gridHelpers.ts               # Grid utility functions
 ```
 
 ## 🎯 Usage Examples
