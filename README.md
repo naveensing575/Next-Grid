@@ -1,4 +1,4 @@
-# Zuperscore Data Grid - Frontend Developer Assignment
+# Zuperscore Data Grid - Frontend
 
 A comprehensive, feature-rich data grid component built with Next.js 14+, TypeScript, and Tailwind CSS. This project demonstrates advanced frontend development skills with a focus on performance, accessibility, and user experience.
 
