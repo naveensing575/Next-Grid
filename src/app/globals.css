@@ -1,27 +1,261 @@
 @import "tailwindcss";
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/inter/700.css";
 
-/* Base variables for light mode */
+/* Premium Color Palette - Samsung One UI & iOS Inspired */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Backgrounds - Soft, eye-soothing whites */
+  --background: #f8f9fa;
+  --background-secondary: #ffffff;
+  --background-tertiary: #f1f3f5;
+
+  /* Foreground colors */
+  --foreground: #1a1d1e;
+  --foreground-secondary: #6b7280;
+  --foreground-muted: #9ca3af;
+
+  /* Primary accent - Samsung blue / iOS blue inspired */
+  --primary: #007aff;
+  --primary-light: #5cadff;
+  --primary-dark: #0051d5;
+  --primary-glow: rgba(0, 122, 255, 0.1);
+
+  /* Success green - iOS style */
+  --success: #34c759;
+  --success-light: #66d983;
+  --success-glow: rgba(52, 199, 89, 0.1);
+
+  /* Warning orange */
+  --warning: #ff9500;
+  --warning-light: #ffb340;
+  --warning-glow: rgba(255, 149, 0, 0.1);
+
+  /* Error red - iOS style */
+  --error: #ff3b30;
+  --error-light: #ff6961;
+  --error-glow: rgba(255, 59, 48, 0.1);
+
+  /* Borders and dividers */
+  --border: #e5e7eb;
+  --border-light: #f3f4f6;
+  --divider: rgba(0, 0, 0, 0.06);
+
+  /* Card shadows - subtle, premium */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #007aff 0%, #5cadff 100%);
+  --gradient-success: linear-gradient(135deg, #34c759 0%, #66d983 100%);
 }
 
-/* Dark mode variables when `html` has .dark class */
+/* Dark mode - OLED friendly, Samsung One UI style */
 html.dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --background: #000000;
+  --background-secondary: #1c1c1e;
+  --background-tertiary: #2c2c2e;
+
+  --foreground: #f5f5f7;
+  --foreground-secondary: #a1a1aa;
+  --foreground-muted: #71717a;
+
+  --primary: #0a84ff;
+  --primary-light: #64b5f6;
+  --primary-dark: #0066cc;
+  --primary-glow: rgba(10, 132, 255, 0.15);
+
+  --success: #32d74b;
+  --success-light: #5de275;
+  --success-glow: rgba(50, 215, 75, 0.15);
+
+  --warning: #ff9f0a;
+  --warning-light: #ffb340;
+  --warning-glow: rgba(255, 159, 10, 0.15);
+
+  --error: #ff453a;
+  --error-light: #ff6961;
+  --error-glow: rgba(255, 69, 58, 0.15);
+
+  --border: #38383a;
+  --border-light: #2c2c2e;
+  --divider: rgba(255, 255, 255, 0.08);
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+
+  --gradient-primary: linear-gradient(135deg, #0a84ff 0%, #64b5f6 100%);
+  --gradient-success: linear-gradient(135deg, #32d74b 0%, #5de275 100%);
 }
 
-/* Optional font config */
+/* Premium typography - Inter font */
 :root {
-  --font-sans: var(--font-geist-sans, system-ui, sans-serif);
-  --font-mono: var(--font-geist-mono, monospace);
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "SF Mono", "Monaco", "Inconsolata", monospace;
 }
 
-/* Fallback if no Tailwind utility used */
+/* Smooth, premium body styles */
 body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar - iOS/Samsung style */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--foreground-muted);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground-secondary);
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Premium animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Utility animation classes */
+.animate-fade-in {
+  animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-slide-in {
+  animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Smooth focus rings - iOS style */
+*:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Premium button base */
+.btn-premium {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-premium::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn-premium:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Selection color */
+::selection {
+  background-color: var(--primary-glow);
+  color: var(--primary);
+}
+
+/* Disable animations for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

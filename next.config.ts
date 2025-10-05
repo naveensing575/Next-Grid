@@ -1,9 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-   plugins: {
-    "@tailwindcss/postcss": {},
-  },
+  // Next.js configuration options go here
+  // Tailwind CSS is configured via postcss.config.js
 };
 
 export default nextConfig;

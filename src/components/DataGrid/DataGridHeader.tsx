@@ -2,6 +2,7 @@
 
 import { Reorder, motion } from 'framer-motion'
 import { useState, useRef } from 'react'
+import { ArrowUp, ArrowDown, Hash, User, Mail, Briefcase, Building2, DollarSign, Calendar, Activity } from 'lucide-react'
 
 interface Props {
   onSort: (col: keyof User) => void
@@ -64,9 +65,43 @@ export default function DataGridHeader({
   const [showContextMenu, setShowContextMenu] = useState<string | null>(null)
   const headerRef = useRef<HTMLTableRowElement>(null)
 
-  const getIcon = (col: keyof User) => {
-    if (sortColumn !== col) return ''
-    return sortOrder === 'asc' ? ' ▲' : sortOrder === 'desc' ? ' ▼' : ''
+  const getSortIcon = (col: keyof User) => {
+    if (sortColumn !== col) return null
+    return sortOrder === 'asc' ? (
+      <ArrowUp className="w-3.5 h-3.5 text-[var(--primary)]" />
+    ) : sortOrder === 'desc' ? (
+      <ArrowDown className="w-3.5 h-3.5 text-[var(--primary)]" />
+    ) : null
+  }
+
+  const getColumnIcon = (col: string) => {
+    const iconClass = "w-4 h-4 text-[var(--foreground-secondary)]"
+    switch (col) {
+      case 'id': return <Hash className={iconClass} />
+      case 'name': return <User className={iconClass} />
+      case 'email': return <Mail className={iconClass} />
+      case 'role': return <Briefcase className={iconClass} />
+      case 'department': return <Building2 className={iconClass} />
+      case 'salary': return <DollarSign className={iconClass} />
+      case 'joinDate': return <Calendar className={iconClass} />
+      case 'status': return <Activity className={iconClass} />
+      default: return null
+    }
+  }
+
+  const getColumnLabel = (col: string) => {
+    const labels: Record<string, string> = {
+      id: 'ID',
+      name: 'Name',
+      email: 'Email',
+      role: 'Role',
+      department: 'Department',
+      salary: 'Salary',
+      joinDate: 'Join Date',
+      status: 'Status',
+      actions: 'Actions'
+    }
+    return labels[col] || col.charAt(0).toUpperCase() + col.slice(1)
   }
 
   const handleMouseDown = (e: React.MouseEvent<HTMLTableHeaderCellElement>, col: string) => {
@@ -129,9 +164,18 @@ export default function DataGridHeader({
       case 'name':
       case 'email':
         return (
-          <td key={col} className="p-2 min-w-[140px] bg-background text-foreground">
+          <td key={col} className="px-4 py-3 bg-[var(--background)]">
             <input
-              className="w-full px-2 py-1 border rounded text-sm h-10 bg-background text-foreground"
+              className="
+                w-full px-3 py-2
+                bg-[var(--background)]
+                border border-[var(--border)]
+                rounded-xl
+                text-sm text-[var(--foreground)]
+                placeholder:text-[var(--foreground-muted)]
+                focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent
+                transition-all duration-200
+              "
               placeholder={`Search ${col}`}
               value={filters[col]}
               onChange={(e) => onFilterChange(col, e.target.value)}
@@ -141,9 +185,18 @@ export default function DataGridHeader({
       case 'role':
       case 'status':
         return (
-          <td key={col} className="p-2 min-w-[140px] bg-background text-foreground">
+          <td key={col} className="px-4 py-3 bg-[var(--background)]">
             <select
-              className="w-full px-2 py-1 border rounded text-sm h-10 bg-background text-foreground"
+              className="
+                w-full px-3 py-2
+                bg-[var(--background)]
+                border border-[var(--border)]
+                rounded-xl
+                text-sm text-[var(--foreground)]
+                focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent
+                transition-all duration-200
+                cursor-pointer
+              "
               value={filters[col]}
               onChange={(e) => onFilterChange(col, e.target.value)}
             >
@@ -161,27 +214,45 @@ export default function DataGridHeader({
         )
       case 'salary':
         return (
-          <td key={col} className="p-2 min-w-[140px] bg-background text-foreground">
-            <div className="flex gap-1">
+          <td key={col} className="px-4 py-3 bg-[var(--background)]">
+            <div className="flex gap-2">
               <input
                 type="number"
                 placeholder="Min"
                 value={filters.salaryMin}
                 onChange={(e) => onFilterChange('salaryMin', e.target.value)}
-                className="w-1/2 px-1 py-1 border rounded text-sm h-10 bg-background text-foreground"
+                className="
+                  w-1/2 px-2 py-2
+                  bg-[var(--background)]
+                  border border-[var(--border)]
+                  rounded-xl
+                  text-sm text-[var(--foreground)]
+                  placeholder:text-[var(--foreground-muted)]
+                  focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent
+                  transition-all duration-200
+                "
               />
               <input
                 type="number"
                 placeholder="Max"
                 value={filters.salaryMax}
                 onChange={(e) => onFilterChange('salaryMax', e.target.value)}
-                className="w-1/2 px-1 py-1 border rounded text-sm h-10 bg-background text-foreground"
+                className="
+                  w-1/2 px-2 py-2
+                  bg-[var(--background)]
+                  border border-[var(--border)]
+                  rounded-xl
+                  text-sm text-[var(--foreground)]
+                  placeholder:text-[var(--foreground-muted)]
+                  focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent
+                  transition-all duration-200
+                "
               />
             </div>
           </td>
         )
       default:
-        return <td key={col} className="p-2 min-w-[140px] bg-background text-foreground"></td>
+        return <td key={col} className="px-4 py-3 bg-[var(--background)]"></td>
     }
   }
 
@@ -196,12 +267,19 @@ export default function DataGridHeader({
         ref={headerRef}
       >
         {enableBulkActions && (
-          <th className="p-3 w-[50px] border-r border-gray-300 bg-background text-foreground">
+          <th className="px-4 py-4 w-[60px] text-center bg-[var(--background-tertiary)] border-b-2 border-[var(--border)]">
             <input
               type="checkbox"
               checked={selectedIds.length > 0}
               onChange={(e) => onSelectAll(e.target.checked)}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="
+                w-4 h-4 rounded
+                border-2 border-[var(--border)]
+                text-[var(--primary)]
+                focus:ring-2 focus:ring-[var(--primary-glow)]
+                transition-all duration-200
+                cursor-pointer
+              "
             />
           </th>
         )}
@@ -219,25 +297,34 @@ export default function DataGridHeader({
               layout
               transition={{ type: 'spring', stiffness: 500, damping: 30 }}
               style={getColumnStyle(col)}
-              className={`relative p-3 border-r border-gray-300 text-foreground ${
-                pinnedSide ? 'bg-background' : ''
-              } ${isFrozen ? 'bg-background' : ''}`}
+              className={`
+                relative px-4 py-4
+                bg-[var(--background-tertiary)]
+                border-b-2 border-[var(--border)]
+                text-[var(--foreground)]
+                font-semibold text-sm
+                ${pinnedSide ? 'bg-[var(--background-secondary)] shadow-sm' : ''}
+                ${isFrozen ? 'bg-[var(--background-secondary)]' : ''}
+              `}
               onMouseDown={(e: React.MouseEvent<HTMLTableHeaderCellElement>) => handleMouseDown(e, col)}
               onContextMenu={(e: React.MouseEvent) => handleContextMenu(e, col)}
             >
               <motion.div
                 layout
-                className={`flex items-center justify-between w-full transition-all duration-300 ${
-                  isSortable ? 'cursor-pointer select-none' : ''
-                }`}
+                className={`
+                  flex items-center justify-between w-full
+                  transition-all duration-300
+                  ${isSortable ? 'cursor-pointer select-none hover:text-[var(--primary)]' : ''}
+                `}
                 onClick={() => isSortable && onSort(col as keyof User)}
               >
-                <div className="flex items-center gap-1">
-                  {pinnedSide && <span className="text-blue-500 text-xs">{pinnedSide === 'left' ? '📌' : '📍'}</span>}
-                  {isFrozen && <span className="text-yellow-500 text-xs">❄️</span>}
-                  <span className="truncate">{col.charAt(0).toUpperCase() + col.slice(1)}</span>
+                <div className="flex items-center gap-2.5">
+                  {getColumnIcon(col)}
+                  <span className="truncate font-semibold">{getColumnLabel(col)}</span>
                 </div>
-                <span>{getIcon(col as keyof User)}</span>
+                <div className="flex items-center gap-1">
+                  {getSortIcon(col as keyof User)}
+                </div>
               </motion.div>
 
               <div className="resize-handle absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-500 opacity-0 hover:opacity-100 transition-opacity" />

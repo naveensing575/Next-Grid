@@ -72,7 +72,7 @@ export const exportToExcel = (data: User[], filename: string = 'data.xlsx') => {
 }
 
 // PDF Export (using HTML to PDF approach)
-export const exportToPDF = (data: User[], filename: string = 'data.pdf') => {
+export const exportToPDF = (data: User[]) => {
   if (data.length === 0) {
     alert('No data to export')
     return
@@ -184,7 +184,7 @@ export const exportFilteredData = (
       exportToExcel(dataToExport, filename || `${defaultFilename}.xlsx`)
       break
     case 'pdf':
-      exportToPDF(dataToExport, filename || `${defaultFilename}.pdf`)
+      exportToPDF(dataToExport)
       break
     default:
       console.error('Unsupported export format:', format)

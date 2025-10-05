@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Button from '../ui/Button'
+import { Eye, Edit, Trash2, Mail, Briefcase, Building2, DollarSign, Calendar, CheckCircle2, XCircle } from 'lucide-react'
 
 interface User {
   id: number
@@ -145,15 +146,65 @@ export default function DataGridRow({
     if (customRenderers[field]) return customRenderers[field](value, user)
 
     switch (field) {
+      case 'email':
+        return renderEditableCell(field, value, (
+          <div className="flex items-center gap-2">
+            <Mail className="w-3.5 h-3.5 text-[var(--foreground-secondary)] flex-shrink-0" />
+            <a href={`mailto:${value}`} className="text-[var(--primary)] hover:underline truncate">
+              {value}
+            </a>
+          </div>
+        ))
+      case 'role':
+        return renderEditableCell(field, value, (
+          <div className="flex items-center gap-2">
+            <Briefcase className="w-3.5 h-3.5 text-[var(--foreground-secondary)] flex-shrink-0" />
+            <span className="truncate">{value}</span>
+          </div>
+        ))
+      case 'department':
+        return renderEditableCell(field, value, (
+          <div className="flex items-center gap-2">
+            <Building2 className="w-3.5 h-3.5 text-[var(--foreground-secondary)] flex-shrink-0" />
+            <span className="truncate">{value}</span>
+          </div>
+        ))
       case 'salary':
-        return renderEditableCell(field, value, `$${Number(value).toLocaleString()}`)
+        return renderEditableCell(field, value, (
+          <div className="flex items-center gap-2">
+            <DollarSign className="w-3.5 h-3.5 text-[var(--success)] flex-shrink-0" />
+            <span className="font-semibold text-[var(--foreground)]">
+              ${Number(value).toLocaleString()}
+            </span>
+          </div>
+        ))
       case 'joinDate':
-        return renderEditableCell(field, value, new Date(value).toLocaleDateString())
+        return renderEditableCell(field, value, (
+          <div className="flex items-center gap-2">
+            <Calendar className="w-3.5 h-3.5 text-[var(--foreground-secondary)] flex-shrink-0" />
+            <span className="text-[var(--foreground-secondary)]">
+              {new Date(value).toLocaleDateString()}
+            </span>
+          </div>
+        ))
       case 'status':
+        const isActive = value === 'active'
         const statusDisplay = (
-          <span className="px-2 py-1 rounded-full text-xs font-medium bg-[var(--foreground)/10] text-[var(--foreground)]">
-            {value}
-          </span>
+          <div className="flex items-center gap-2">
+            {isActive ? (
+              <CheckCircle2 className="w-4 h-4 text-[var(--success)]" />
+            ) : (
+              <XCircle className="w-4 h-4 text-[var(--foreground-secondary)]" />
+            )}
+            <span className={`
+              px-3 py-1 rounded-full text-xs font-semibold
+              ${isActive
+                ? 'bg-[var(--success-glow)] text-[var(--success)]'
+                : 'bg-[var(--background-tertiary)] text-[var(--foreground-secondary)]'}
+            `}>
+              {value}
+            </span>
+          </div>
         )
         return renderEditableCell(field, value, statusDisplay)
       default:
@@ -163,66 +214,109 @@ export default function DataGridRow({
 
   return (
     <tr
-      className={`border-b transition-colors hover:bg-[var(--foreground)/5] ${
-        isSelected ? 'bg-[var(--foreground)/10]' : 'odd:bg-[var(--background)]'
-      }`}
-      style={{ height: '60px' }}
+      className={`
+        border-b border-[var(--divider)]
+        transition-all duration-200
+        hover:bg-[var(--primary-glow)]
+        ${isSelected ? 'bg-[var(--primary-glow)] shadow-sm' : ''}
+      `}
+      style={{ height: '64px' }}
     >
       {onSelect && (
-        <td className="p-3 w-[50px]">
+        <td className="px-4 py-3 w-[60px] text-center">
           <input
             type="checkbox"
             checked={isSelected}
             onChange={(e) => onSelect(user.id, e.target.checked)}
-            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            className="
+              w-4 h-4 rounded
+              border-2 border-[var(--border)]
+              text-[var(--primary)]
+              focus:ring-2 focus:ring-[var(--primary-glow)]
+              transition-all duration-200
+              cursor-pointer
+            "
           />
         </td>
       )}
 
       {visibleColumns.includes('id') && (
-        <td className="p-3 w-[60px] sticky left-0 z-10 bg-[var(--background)] text-[var(--foreground)]">
-          {user.id}
+        <td className="px-4 py-3 w-[80px] font-semibold text-[var(--foreground-secondary)] text-sm">
+          #{user.id}
         </td>
       )}
 
       {visibleColumns.includes('name') && (
-        <td className="p-3">{renderCell('name', user.name)}</td>
+        <td className="px-4 py-3 min-w-[200px] max-w-[250px]">
+          <div className="font-medium text-[var(--foreground)]">
+            {renderCell('name', user.name)}
+          </div>
+        </td>
       )}
 
       {visibleColumns.includes('email') && (
-        <td className="p-3">{renderCell('email', user.email)}</td>
+        <td className="px-4 py-3 min-w-[220px] max-w-[280px]">
+          {renderCell('email', user.email)}
+        </td>
       )}
 
       {visibleColumns.includes('role') && (
-        <td className="p-3">{renderCell('role', user.role)}</td>
+        <td className="px-4 py-3 min-w-[140px] max-w-[180px]">
+          {renderCell('role', user.role)}
+        </td>
       )}
 
       {visibleColumns.includes('department') && (
-        <td className="p-3">{renderCell('department', user.department)}</td>
+        <td className="px-4 py-3 min-w-[150px] max-w-[180px]">
+          {renderCell('department', user.department)}
+        </td>
       )}
 
       {visibleColumns.includes('salary') && (
-        <td className="p-3">{renderCell('salary', user.salary)}</td>
+        <td className="px-4 py-3 min-w-[140px] max-w-[160px]">
+          {renderCell('salary', user.salary)}
+        </td>
       )}
 
       {visibleColumns.includes('joinDate') && (
-        <td className="p-3">{renderCell('joinDate', user.joinDate)}</td>
+        <td className="px-4 py-3 min-w-[150px] max-w-[170px]">
+          {renderCell('joinDate', user.joinDate)}
+        </td>
       )}
 
       {visibleColumns.includes('status') && (
-        <td className="p-3">{renderCell('status', user.status)}</td>
+        <td className="px-4 py-3 min-w-[130px] max-w-[150px]">
+          {renderCell('status', user.status)}
+        </td>
       )}
 
       {visibleColumns.includes('actions') && (
-        <td className="p-3">
-          <div className="flex flex-wrap gap-2">
-            <Button label="View" onClick={onView} color="blue" />
+        <td className="px-4 py-3 min-w-[200px] sticky right-0 bg-[var(--background-secondary)]">
+          <div className="flex gap-2">
             <Button
-              label={enableInlineEdit ? 'Modal Edit' : 'Edit'}
-              onClick={onEdit}
-              color="yellow"
+              label="View"
+              onClick={onView}
+              color="secondary"
+              size="sm"
+              variant="ghost"
+              icon={Eye}
             />
-            <Button label="Delete" onClick={() => handleDelete(user.id)} color="red" />
+            <Button
+              label="Edit"
+              onClick={onEdit}
+              color="primary"
+              size="sm"
+              variant="ghost"
+              icon={Edit}
+            />
+            <Button
+              label="Delete"
+              onClick={() => handleDelete(user.id)}
+              color="error"
+              size="sm"
+              variant="ghost"
+              icon={Trash2}
+            />
           </div>
         </td>
       )}

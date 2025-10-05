@@ -9,6 +9,64 @@ import ColumnManager from './ColumnManager'
 import Modal from '../ui/Modal'
 import BulkActions from './BulkActions'
 import { exportFilteredData } from '@/utils/exportUtils'
+import { Search, Zap, Edit2, CheckSquare, Columns, Database } from 'lucide-react'
+
+// Premium Toggle Switch Component
+function ToggleSwitch({
+  label,
+  checked,
+  onChange,
+  icon
+}: {
+  label: string
+  checked: boolean
+  onChange: (value: boolean) => void
+  icon?: React.ReactNode
+}) {
+  return (
+    <label className="
+      inline-flex items-center gap-2.5
+      px-4 py-2.5
+      bg-[var(--background)]
+      border border-[var(--border)]
+      rounded-xl
+      cursor-pointer
+      transition-all duration-300
+      hover:shadow-md hover:scale-105
+      active:scale-95
+    ">
+      <div className="flex items-center gap-2">
+        {icon && <span className="text-[var(--foreground-secondary)]">{icon}</span>}
+        <span className="text-sm font-medium text-[var(--foreground)]">{label}</span>
+      </div>
+      <div className="relative">
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={(e) => onChange(e.target.checked)}
+          className="sr-only peer"
+        />
+        <div className="
+          w-11 h-6
+          bg-[var(--border)]
+          rounded-full
+          peer-checked:bg-[var(--primary)]
+          transition-all duration-300
+          peer-focus:ring-2 peer-focus:ring-[var(--primary-glow)]
+        " />
+        <div className="
+          absolute top-0.5 left-0.5
+          w-5 h-5
+          bg-white
+          rounded-full
+          shadow-md
+          transition-all duration-300
+          peer-checked:translate-x-5
+        " />
+      </div>
+    </label>
+  )
+}
 
 interface User {
   id: number
@@ -33,8 +91,8 @@ interface Filters {
   salaryMax: string
 }
 
-const ITEM_HEIGHT = 60 // Height of each row in pixels
-const CONTAINER_HEIGHT = 600 // Height of the scrollable container
+const ITEM_HEIGHT = 60
+const CONTAINER_HEIGHT = 600
 
 export default function VirtualizedDataGrid() {
   const [data, setData] = useState<User[]>([])
@@ -88,8 +146,6 @@ export default function VirtualizedDataGrid() {
     actions: 180,
   })
   const [frozenColumns, setFrozenColumns] = useState<string[]>([])
-  
-  // New state for features
   const [selectedIds, setSelectedIds] = useState<number[]>([])
   const [enableInlineEdit, setEnableInlineEdit] = useState(false)
   const [enableBulkActions, setEnableBulkActions] = useState(true)
@@ -98,25 +154,20 @@ export default function VirtualizedDataGrid() {
     const fetchData = async () => {
       const res = await fetch('/mock-data.json')
       const json = await res.json()
-      
-      // For demonstration, we can either use original data or expand it
-      // Toggle this flag to test with large dataset vs normal dataset
       const useLargeDataset = useVirtualization
       
       if (useLargeDataset) {
-        // Create a larger dataset for testing virtualization without "Copy" labels
         const firstNames = ['John', 'Jane', 'Michael', 'Sarah', 'David', 'Lisa', 'Robert', 'Emily', 'James', 'Jessica', 'William', 'Ashley', 'Richard', 'Amanda', 'Joseph', 'Stephanie', 'Christopher', 'Jennifer', 'Daniel', 'Nicole']
         const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin']
-        
+
         const expandedData = []
         for (let i = 0; i < 500; i++) {
           const baseUser = json.data[i % json.data.length]
-          // Use deterministic selection based on index to avoid hydration issues
           const firstNameIndex = (i * 7) % firstNames.length
           const lastNameIndex = (i * 11) % lastNames.length
           const firstName = firstNames[firstNameIndex]
           const lastName = lastNames[lastNameIndex]
-          
+
           expandedData.push({
             ...baseUser,
             id: i + 1,
@@ -196,11 +247,8 @@ export default function VirtualizedDataGrid() {
 
   const handleDelete = (id: number) => {
     setData((prev) => prev.filter((user) => user.id !== id))
-    // Remove from selection if it was selected
     setSelectedIds((prev) => prev.filter(selectedId => selectedId !== id))
   }
-
-  // New handlers for enhanced features
   const handleUserUpdate = (id: number, updatedFields: Partial<User>) => {
     setData((prev) => prev.map(user => 
       user.id === id ? { ...user, ...updatedFields } : user
@@ -248,7 +296,6 @@ export default function VirtualizedDataGrid() {
     setModalType(null)
   }
 
-  // Custom cell renderers for demonstration
   const customRenderers: Record<string, (value: string | number, user: User) => React.ReactNode> = {
   name: (value) => {
     const stringValue = String(value)
@@ -309,7 +356,6 @@ export default function VirtualizedDataGrid() {
       })
     : filteredData
 
-  // Virtual scrolling logic
   const virtualScroll = useVirtualScroll(sortedData, {
     itemHeight: ITEM_HEIGHT,
     containerHeight: CONTAINER_HEIGHT,
@@ -325,65 +371,99 @@ export default function VirtualizedDataGrid() {
 
   const totalPages = useVirtualization ? 1 : Math.ceil(sortedData.length / 20)
 
-  if (loading) return <p className="text-center">Loading...</p>
-
-  return (
-    <div className="overflow-auto border rounded-xl bg-white dark:bg-gray-900 p-4">
-      <div className="flex justify-between items-start mb-4 gap-4">
-        <input
-          type="text"
-          placeholder="Global search..."
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value)
-            setCurrentPage(1)
-          }}
-          className="w-full max-w-xs px-3 py-2 border rounded dark:bg-gray-800 dark:text-white"
-        />
-
-        <div className="flex flex-wrap gap-2">
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={useVirtualization}
-              onChange={(e) => setUseVirtualization(e.target.checked)}
-              className="accent-blue-500"
-            />
-            Virtualization
-          </label>
-          
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={enableInlineEdit}
-              onChange={(e) => setEnableInlineEdit(e.target.checked)}
-              className="accent-green-500"
-            />
-            Inline Edit
-          </label>
-          
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={enableBulkActions}
-              onChange={(e) => setEnableBulkActions(e.target.checked)}
-              className="accent-purple-500"
-            />
-            Bulk Actions
-          </label>
-          
-          <button
-            className="px-3 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 cursor-pointer rounded text-sm transition-all"
-            onClick={() => setShowColumnManager((prev) => !prev)}
-          >
-            {showColumnManager ? 'Hide' : 'Manage'} Columns
-          </button>
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin" />
+          <p className="text-[var(--foreground-secondary)] font-medium">Loading data...</p>
         </div>
       </div>
+    )
+  }
 
-      <div className="mb-2 text-sm text-gray-600 dark:text-gray-400">
-        Showing {paginatedData.length} of {sortedData.length} rows
-        {useVirtualization && ` (Virtualized: ${virtualScroll.startIndex + 1}-${virtualScroll.endIndex})`}
+  return (
+    <div className="bg-[var(--background-secondary)] border border-[var(--border)] rounded-3xl shadow-lg overflow-hidden">
+      <div className="bg-gradient-to-r from-[var(--background-secondary)] to-[var(--background-tertiary)] p-5 border-b border-[var(--border)]">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+          <div className="relative w-full max-w-md">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[var(--foreground-secondary)]" />
+            <input
+              type="text"
+              placeholder="Search across all columns..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value)
+                setCurrentPage(1)
+              }}
+              className="
+                w-full pl-11 pr-4 py-3
+                bg-[var(--background)]
+                border border-[var(--border)]
+                rounded-2xl
+                text-[var(--foreground)]
+                placeholder:text-[var(--foreground-muted)]
+                focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent
+                transition-all duration-300
+                text-sm
+              "
+            />
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2.5">
+            <ToggleSwitch
+              label="Virtualization"
+              checked={useVirtualization}
+              onChange={setUseVirtualization}
+              icon={<Zap className="w-3.5 h-3.5" />}
+            />
+
+            <ToggleSwitch
+              label="Inline Edit"
+              checked={enableInlineEdit}
+              onChange={setEnableInlineEdit}
+              icon={<Edit2 className="w-3.5 h-3.5" />}
+            />
+
+            <ToggleSwitch
+              label="Bulk Actions"
+              checked={enableBulkActions}
+              onChange={setEnableBulkActions}
+              icon={<CheckSquare className="w-3.5 h-3.5" />}
+            />
+
+            <button
+              className="
+                inline-flex items-center gap-2
+                px-4 py-2.5
+                bg-[var(--primary)]
+                text-white
+                rounded-xl
+                text-sm font-medium
+                shadow-md hover:shadow-lg
+                transition-all duration-300
+                hover:scale-105 active:scale-95
+              "
+              onClick={() => setShowColumnManager((prev) => !prev)}
+            >
+              <Columns className="w-4 h-4" />
+              <span>{showColumnManager ? 'Hide' : 'Manage'} Columns</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-4 flex items-center gap-3 text-sm">
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-[var(--primary-glow)] text-[var(--primary)] rounded-xl">
+            <Database className="w-4 h-4" />
+            <span className="font-medium">{paginatedData.length} of {sortedData.length} rows</span>
+          </div>
+          {useVirtualization && (
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-[var(--success-glow)] text-[var(--success)] rounded-xl">
+              <Zap className="w-4 h-4" />
+              <span className="font-medium">Virtualized: {virtualScroll.startIndex + 1}-{virtualScroll.endIndex}</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {showColumnManager && (
@@ -393,8 +473,7 @@ export default function VirtualizedDataGrid() {
           onToggle={handleToggleColumn}
         />
       )}
-      
-      {/* Bulk Actions */}
+
       {enableBulkActions && (
         <BulkActions
           selectedIds={selectedIds}
@@ -409,13 +488,13 @@ export default function VirtualizedDataGrid() {
       {useVirtualization ? (
         <div
           ref={scrollContainerRef}
-          className="overflow-auto border rounded"
+          className="overflow-auto border-t border-[var(--border)] rounded-b-3xl custom-scrollbar"
           style={{ height: CONTAINER_HEIGHT }}
           onScroll={virtualScroll.handleScroll}
         >
           <div style={{ height: virtualScroll.totalHeight, position: 'relative' }}>
             <table className="min-w-full table-fixed text-sm">
-              <thead className="sticky top-0 z-20 bg-white dark:bg-gray-900">
+              <thead className="sticky top-0 z-20 bg-[var(--background-secondary)] backdrop-blur-sm">
                 <DataGridHeader
                   sortColumn={sortColumn}
                   sortOrder={sortOrder}
@@ -462,9 +541,9 @@ export default function VirtualizedDataGrid() {
           </div>
         </div>
       ) : (
-        <div className="overflow-auto border rounded">
+        <div className="overflow-auto border-t border-[var(--border)] rounded-b-3xl custom-scrollbar">
           <table className="min-w-full table-fixed text-sm">
-            <thead className="sticky top-0 z-10">
+            <thead className="sticky top-0 z-10 bg-[var(--background-secondary)] backdrop-blur-sm">
               <DataGridHeader
                 sortColumn={sortColumn}
                 sortOrder={sortOrder}

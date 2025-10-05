@@ -18,15 +18,15 @@ describe('Button', () => {
   })
 
   it('applies the correct color styles', () => {
-    const colors = {
-      blue: 'text-blue-600 border-blue-600',
-      red: 'text-red-600 border-red-600',
-      yellow: 'text-yellow-600 border-yellow-600',
-      green: 'text-green-600 border-green-600',
-    }
+    const colors: Array<{ color: 'blue' | 'red' | 'yellow' | 'green', className: string }> = [
+      { color: 'blue', className: 'text-blue-600 border-blue-600' },
+      { color: 'red', className: 'text-red-600 border-red-600' },
+      { color: 'yellow', className: 'text-yellow-600 border-yellow-600' },
+      { color: 'green', className: 'text-green-600 border-green-600' },
+    ]
 
-    Object.entries(colors).forEach(([color, className]) => {
-      render(<Button label={color} onClick={() => {}} color={color as unknown} />)
+    colors.forEach(({ color, className }) => {
+      render(<Button label={color} onClick={() => {}} color={color} />)
       expect(screen.getByText(color)).toHaveClass(className)
     })
   })

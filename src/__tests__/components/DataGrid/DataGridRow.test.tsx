@@ -10,7 +10,7 @@ const mockUser = {
   department: 'Engineering',
   salary: 100000,
   joinDate: '2023-01-01',
-  status: 'active',
+  status: 'active' as const,
 }
 
 describe('DataGridRow', () => {
