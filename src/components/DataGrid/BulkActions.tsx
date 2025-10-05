@@ -44,7 +44,7 @@ export default function BulkActions({
             <Button
               label="Export Selected"
               onClick={() => setShowExportMenu(!showExportMenu)}
-              color="blue"
+              color="primary"
             />
             
             {showExportMenu && (
@@ -83,13 +83,13 @@ export default function BulkActions({
           <Button
             label="Activate Selected"
             onClick={() => onBulkStatusChange(selectedIds, 'active')}
-            color="green"
+            color="warning"
           />
 
           <Button
             label="Deactivate Selected"
             onClick={() => onBulkStatusChange(selectedIds, 'inactive')}
-            color="yellow"
+            color="secondary"
           />
 
           <Button
@@ -99,7 +99,7 @@ export default function BulkActions({
                 onBulkDelete(selectedIds)
               }
             }}
-            color="red"
+            color="error"
           />
         </div>
       </div>
